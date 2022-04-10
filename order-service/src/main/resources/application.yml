@@ -12,6 +12,8 @@ spring:
   cloud:
     nacos:
       server-addr: 120.26.107.127:8848
+      discovery:
+        cluster-name: HZ # 集群名称
 mybatis:
   type-aliases-package: cn.itcast.user.pojo
   configuration:
@@ -28,8 +30,9 @@ logging:
 #      defaultZone: http://localhost:10086/eureka
 user-service:
   ribbon:
-    #配置当前模块中仅user-service采用随机模式负载均衡规则
-    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
+    # 配置当前模块中仅user-service采用随机模式负载均衡规则
+    # NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
+    NFLoadBalancerRuleClassName: com.alibaba.cloud.nacos.ribbon.NacosRule # 负载均衡规则
 ribbon:
   eager-load:
     enabled: true         # 开启饥饿加载
