@@ -9,6 +9,9 @@ spring:
   application:
     #order服务的名称
     name: order-service
+  cloud:
+    nacos:
+      server-addr: 120.26.107.127:8848
 mybatis:
   type-aliases-package: cn.itcast.user.pojo
   configuration:
@@ -18,11 +21,11 @@ logging:
     cn.itcast: debug
   pattern:
     dateformat: MM-dd HH:mm:ss:SSS
-eureka:
-  client:
-    service-url:
-      # eureka的地址信息
-      defaultZone: http://localhost:10086/eureka
+#eureka:
+#  client:
+#    service-url:
+#      # eureka的地址信息
+#      defaultZone: http://localhost:10086/eureka
 user-service:
   ribbon:
     #配置当前模块中仅user-service采用随机模式负载均衡规则

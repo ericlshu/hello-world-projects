@@ -9,6 +9,9 @@ spring:
   application:
     #user服务的名称
     name: user-service
+  cloud:
+    nacos:
+      server-addr: 120.26.107.127:8848
 mybatis:
   type-aliases-package: cn.itcast.user.pojo
   configuration:
@@ -18,8 +21,8 @@ logging:
     cn.itcast: debug
   pattern:
     dateformat: MM-dd HH:mm:ss:SSS
-eureka:
-  client:
-    service-url:
-      # eureka的地址信息
-      defaultZone: http://localhost:10086/eureka
+#eureka:
+#  client:
+#    service-url:
+#      # eureka的地址信息
+#      defaultZone: http://localhost:10086/eureka
