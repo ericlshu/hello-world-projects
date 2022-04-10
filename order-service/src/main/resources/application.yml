@@ -27,3 +27,7 @@ user-service:
   ribbon:
     #配置当前模块中仅user-service采用随机模式负载均衡规则
     NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
+ribbon:
+  eager-load:
+    enabled: true         # 开启饥饿加载
+    clients: user-service # 指定对user-service这个服务饥饿加载
