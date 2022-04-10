@@ -15,20 +15,20 @@ spring:
       maximum-pool-size: 10
       minimum-idle: 5
       read-only: false
-  application:
-    #order服务的名称
-    name: order-service
-  cloud:
-    nacos:
-      server-addr: 120.26.107.127:8848
-      discovery:
-        cluster-name: HZ # 集群名称
-        # 1. 每个namespace都有唯一id
-        # 2. 服务设置namespace时要写id而不是名称
-        # 3. 不同namespace下的服务互相不可见
-        namespace: fbd5aa47-b211-4442-bb3e-9a44f89a22cb
-        # 临时实例宕机时，会从nacos的服务列表中剔除，而非临时实例则不会
-        ephemeral: false #设置为非临时实例
+#  application:
+#    #order服务的名称
+#    name: order-service
+#  cloud:
+#    nacos:
+#      server-addr: 120.26.107.127:8848
+#      discovery:
+#        cluster-name: HZ # 集群名称
+#        # 1. 每个namespace都有唯一id
+#        # 2. 服务设置namespace时要写id而不是名称
+#        # 3. 不同namespace下的服务互相不可见
+#        # namespace: fbd5aa47-b211-4442-bb3e-9a44f89a22cb
+#        # 临时实例宕机时，会从nacos的服务列表中剔除，而非临时实例则不会
+#        ephemeral: false #设置为非临时实例
 mybatis:
   type-aliases-package: cn.itcast.user.pojo
   configuration:

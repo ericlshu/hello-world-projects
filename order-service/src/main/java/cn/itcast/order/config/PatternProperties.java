@@ -1,15 +1,14 @@
-package cn.itcast.user.config;
+package cn.itcast.order.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * Description : 配置自动刷新
- * 方式二：使用@ConfigurationProperties注解
+ * Description :
  *
  * @author Eric L SHU
- * @date 2022-04-10 20:52
+ * @date 2022-04-10 21:37
  * @since jdk-11.0.14
  */
 @Data

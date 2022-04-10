@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: order-service
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      server-addr: 120.26.107.127:8848
+      config:
+        file-extension: yaml
+        shared-configs[0]:        # 多微服务间共享的配置列表
+          dataId: common.yaml     # 要共享的配置文件id
+          refresh: true           # 是否动态刷新，默认为false

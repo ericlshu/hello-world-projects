@@ -10,3 +10,23 @@ spring:
       server-addr: 120.26.107.127:8848
       config:
         file-extension: yaml
+        shared-configs[0]:        # 多微服务间共享的配置列表
+          dataId: common.yaml     # 要共享的配置文件id
+          # group: DEFAULT_GROUP  # 默认为DEFAULT_GROUP
+          refresh: true           # 是否动态刷新，默认为false
+
+
+# 以下配置未验证成功
+# 不同微服务共享的配置文件：
+#   1.通过shared-configs指定
+#   2.通过extension-configs指定
+# 优先级：
+#   服务名-profile.yaml > 服务名.yaml > extension-config > shared-configs > 本地配置
+#  cloud:
+#    nacos:
+#      config:
+#        file-extension: yaml
+#        shared-configs:         # 多微服务间共享的配置列表
+#          - dataId: common.yaml # 要共享的配置文件id
+#        extension-configs:      # 多微服务间共享的配置列表
+#          - dataId: extend      # 要共享的配置文件id
