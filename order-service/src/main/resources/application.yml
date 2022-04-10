@@ -27,6 +27,8 @@ spring:
         # 2. 服务设置namespace时要写id而不是名称
         # 3. 不同namespace下的服务互相不可见
         namespace: fbd5aa47-b211-4442-bb3e-9a44f89a22cb
+        # 临时实例宕机时，会从nacos的服务列表中剔除，而非临时实例则不会
+        ephemeral: false #设置为非临时实例
 mybatis:
   type-aliases-package: cn.itcast.user.pojo
   configuration:
