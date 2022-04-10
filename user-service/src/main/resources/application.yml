@@ -15,14 +15,14 @@ spring:
       maximum-pool-size: 10
       minimum-idle: 5
       read-only: false
-  application:
-    #user服务的名称
-    name: user-service
-  cloud:
-    nacos:
-      server-addr: 120.26.107.127:8848
-      discovery:
-        cluster-name: HZ # 集群名称
+#  application:
+#    #user服务的名称
+#    name: user-service
+#  cloud:
+#    nacos:
+#      server-addr: 120.26.107.127:8848
+#      discovery:
+#        cluster-name: HZ # 集群名称
 mybatis:
   type-aliases-package: cn.itcast.user.pojo
   configuration:
