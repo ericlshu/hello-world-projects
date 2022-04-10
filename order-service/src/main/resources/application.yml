@@ -23,6 +23,10 @@ spring:
       server-addr: 120.26.107.127:8848
       discovery:
         cluster-name: HZ # 集群名称
+        # 1. 每个namespace都有唯一id
+        # 2. 服务设置namespace时要写id而不是名称
+        # 3. 不同namespace下的服务互相不可见
+        namespace: fbd5aa47-b211-4442-bb3e-9a44f89a22cb
 mybatis:
   type-aliases-package: cn.itcast.user.pojo
   configuration:
