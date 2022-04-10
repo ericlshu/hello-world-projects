@@ -18,4 +18,6 @@ import org.springframework.stereotype.Component;
 public class PatternProperties
 {
     private String dateformat;
+    private String envSharedValue;
+    private String parameter;
 }

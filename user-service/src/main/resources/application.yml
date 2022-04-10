@@ -37,3 +37,11 @@ logging:
 #    service-url:
 #      # eureka的地址信息
 #      defaultZone: http://localhost:10086/eureka
+
+# 微服务会从nacos读取的配置文件：
+#   [服务名]-[spring.profile.active].yaml，环境配置
+#   [服务名].yaml，默认配置，多环境共享
+# 优先级：
+#   [服务名]-[环境].yaml >[服务名].yaml > 本地配置
+pattern:
+  parameter: 本地环境-local
