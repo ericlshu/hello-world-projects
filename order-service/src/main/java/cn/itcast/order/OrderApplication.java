@@ -17,7 +17,7 @@ public class OrderApplication
 
     /**
      * 创建RestTemplate并注入Spring容器
-     * 添加负载均衡注解
+     * 添加@LoadBalanced注解，实现负载均衡
      */
     @Bean
     @LoadBalanced

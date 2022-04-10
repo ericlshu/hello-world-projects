@@ -6,6 +6,10 @@ spring:
     name: eureka-server
 eureka:
   client:
+    # 是否注册自己的信息到EurekaServer，默认是true
+    # register-with-eureka: false
+    # 是否拉取其它服务的信息，默认是true；eureka启动时没有其他服务会报错
+    fetch-registry: false
     service-url:
       # eureka的地址信息
-      defaultZone: http://localhost:10086/eureka
+      defaultZone: http://127.0.0.1:10086/eureka
