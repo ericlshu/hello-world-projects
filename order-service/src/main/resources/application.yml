@@ -6,6 +6,9 @@ spring:
     username: eric
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
+  application:
+    #order服务的名称
+    name: order-service
 mybatis:
   type-aliases-package: cn.itcast.user.pojo
   configuration:
@@ -15,3 +18,8 @@ logging:
     cn.itcast: debug
   pattern:
     dateformat: MM-dd HH:mm:ss:SSS
+eureka:
+  client:
+    service-url:
+      # eureka的地址信息
+      defaultZone: http://localhost:10086/eureka
