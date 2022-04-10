@@ -6,6 +6,15 @@ spring:
     username: eric
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 10000
+      validation-timeout: 3000
+      idle-timeout: 60000
+      login-timeout: 5
+      max-lifetime: 60000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      read-only: false
   application:
     #order服务的名称
     name: order-service
@@ -37,3 +46,30 @@ ribbon:
   eager-load:
     enabled: true         # 开启饥饿加载
     clients: user-service # 指定对user-service这个服务饥饿加载
+
+#  mysql> show variables like '%timeout%';
+#  +-----------------------------------+----------+
+#  | Variable_name                     | Value    |
+#  +-----------------------------------+----------+
+#  | connect_timeout                   | 10       |
+#  | delayed_insert_timeout            | 300      |
+#  | have_statement_timeout            | YES      |
+#  | innodb_flush_log_at_timeout       | 1        |
+#  | innodb_lock_wait_timeout          | 50       |
+#  | innodb_rollback_on_timeout        | OFF      |
+#  | interactive_timeout               | 28800    |
+#  | lock_wait_timeout                 | 31536000 |
+#  | mysqlx_connect_timeout            | 30       |
+#  | mysqlx_idle_worker_thread_timeout | 60       |
+#  | mysqlx_interactive_timeout        | 28800    |
+#  | mysqlx_port_open_timeout          | 0        |
+#  | mysqlx_read_timeout               | 30       |
+#  | mysqlx_wait_timeout               | 28800    |
+#  | mysqlx_write_timeout              | 60       |
+#  | net_read_timeout                  | 30       |
+#  | net_write_timeout                 | 60       |
+#  | rpl_stop_slave_timeout            | 31536000 |
+#  | slave_net_timeout                 | 60       |
+#  | wait_timeout                      | 28800    |
+#  +-----------------------------------+----------+
+#  20 rows in set (0.00 sec)
