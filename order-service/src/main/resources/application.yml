@@ -79,3 +79,10 @@ ribbon:
 #  | wait_timeout                      | 28800    |
 #  +-----------------------------------+----------+
 #  20 rows in set (0.00 sec)
+
+#feign:
+#  client:
+#    config:
+#      default:      # 这里用default就是全局配置
+#      # user-service: # 这里用服务名称，则是针对某个微服务的配置
+#        loggerLevel: FULL
