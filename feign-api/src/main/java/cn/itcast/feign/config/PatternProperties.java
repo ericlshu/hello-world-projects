@@ -1,4 +1,4 @@
-package cn.itcast.order.config;
+package cn.itcast.feign.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

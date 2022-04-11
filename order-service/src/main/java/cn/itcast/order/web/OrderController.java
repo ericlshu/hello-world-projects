@@ -1,6 +1,6 @@
 package cn.itcast.order.web;
 
-import cn.itcast.order.config.PatternProperties;
+import cn.itcast.feign.config.PatternProperties;
 import cn.itcast.order.pojo.Order;
 import cn.itcast.order.service.OrderService;
 import lombok.extern.slf4j.Slf4j;

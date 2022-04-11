@@ -1,15 +1,26 @@
 package cn.itcast.order;
 
+import cn.itcast.feign.client.UserClient;
+import cn.itcast.feign.config.PatternProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.client.RestTemplate;
 
-// @MapperScan("cn.itcast.order.mapper")
+/**
+ * 当定义的FeignClient不在SpringBootApplication的扫描包范围时，这些FeignClient无法使用。
+ * 有两种方式解决：
+ * 方式一：指定FeignClient所在包 -->> @EnableFeignClients(basePackages = "cn.itcast.feign.clients")
+ * 方式二：指定FeignClient字节码 -->> @EnableFeignClients(clients = {UserClient.class})
+ * <p>
+ * PatternProperties类移动至feign-api中后，不再位于当前启动类所在包及其子包下，需手动引入；
+ */
 @SpringBootApplication
-@EnableFeignClients()
+@EnableFeignClients(clients = {UserClient.class})
+@Import({PatternProperties.class})
 public class OrderApplication
 {
     public static void main(String[] args)
