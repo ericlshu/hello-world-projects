@@ -12,7 +12,15 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 /**
- * Description :
+ * Description : 过滤器执行顺序
+ * <p>
+ * --> 请求进入网关会碰到三类过滤器：当前路由的过滤器、DefaultFilter、GlobalFilter
+ * --> 请求路由后，会将当前路由过滤器和DefaultFilter、GlobalFilter，合并到一个过滤器链（集合）中，排序后依次执行每个过滤器
+ * <p>
+ * --> 每一个过滤器都必须指定一个int类型的order值，order值越小，优先级越高，执行顺序越靠前。
+ * --> GlobalFilter通过实现Ordered接口，或者添加@Order注解来指定order值，由我们自己指定。
+ * --> 路由过滤器和defaultFilter的order由Spring指定，默认是按照声明顺序从1递增。
+ * --> 当过滤器的order值一样时，会按照 defaultFilter > 路由过滤器 > GlobalFilter的顺序执行。
  *
  * @author Eric L SHU
  * @date 2022-04-12 22:10
