@@ -15,7 +15,12 @@ spring:
           uri: lb://user-service  # 路由的目标地址，可写ip端口号或服务名称，lb代表load balanced
           predicates:             # 路由断言，判断请求是否符合规则
             - Path=/user/**       # 路径断言，判断路径是否是以/user开头，如果是则符合规则
+            - Before=2031-04-13T15:14:47.433+08:00[Asia/Shanghai]
+          # filters:                # 过滤器
+          #  - AddRequestHeader=header,sudo apt-get money! # 添加请求头
         - id: order-service
           uri: lb://order-service
           predicates:
             - Path=/order/**
+      default-filters:
+        - AddRequestHeader=header,sudo apt-get money! # 添加请求头

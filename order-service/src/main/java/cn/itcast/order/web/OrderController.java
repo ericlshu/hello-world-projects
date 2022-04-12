@@ -4,10 +4,7 @@ import cn.itcast.feign.config.PatternProperties;
 import cn.itcast.order.pojo.Order;
 import cn.itcast.order.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -20,8 +17,9 @@ public class OrderController
     private OrderService orderService;
 
     @GetMapping("{orderId}")
-    public Order queryOrderByUserId(@PathVariable("orderId") Long orderId)
+    public Order queryOrderByUserId(@PathVariable("orderId") Long orderId, @RequestHeader(value = "header", required = false) String header)
     {
+        log.info("header + {}", header);
         // 根据id查询订单并返回
         return orderService.queryOrderById(orderId);
     }
