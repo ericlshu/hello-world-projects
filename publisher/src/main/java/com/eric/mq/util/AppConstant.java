@@ -16,4 +16,6 @@ public class AppConstant
     public static final String DIRECT_EXCHANGE = "eric.direct";
 
     public static final String TOPIC_EXCHANGE = "eric.topic";
+
+    public static final String OBJECT_QUEUE = "object.queue";
 }

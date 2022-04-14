@@ -5,6 +5,8 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
  * @since jdk-11.0.14
  */
 @Configuration
-public class FanoutConfig
+public class AMQPConfig
 {
     /**
      * 声明FanoutExchange交换机
@@ -49,5 +51,17 @@ public class FanoutConfig
     public Binding fanoutBinding2(Queue fanoutQueue2, FanoutExchange fanoutExchange)
     {
         return BindingBuilder.bind(fanoutQueue2).to(fanoutExchange);
+    }
+
+    @Bean
+    public Queue objectQueue()
+    {
+        return new Queue(AppConstant.OBJECT_QUEUE);
+    }
+
+    @Bean
+    public MessageConverter jsonMessageConverter()
+    {
+        return new Jackson2JsonMessageConverter();
     }
 }

@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Description :
@@ -63,5 +65,14 @@ public class SpringAmqpTest
         rabbitTemplate.convertAndSend(AppConstant.TOPIC_EXCHANGE, "china.news", "喜报！孙悟空大战哥斯拉，胜!");
         rabbitTemplate.convertAndSend(AppConstant.TOPIC_EXCHANGE, "japan.news", "红色警报！日本乱排核废水，导致海洋生物变异，惊现哥斯拉！");
         rabbitTemplate.convertAndSend(AppConstant.TOPIC_EXCHANGE, "china.weather", "今天天气不错，我的心情好极了。");
+    }
+
+    @Test
+    public void testSendObjectQueue()
+    {
+        Map<String, Object> msg = new HashMap<>(10);
+        msg.put("name", "宝宝");
+        msg.put("age", "9周");
+        rabbitTemplate.convertAndSend(AppConstant.OBJECT_QUEUE, msg);
     }
 }

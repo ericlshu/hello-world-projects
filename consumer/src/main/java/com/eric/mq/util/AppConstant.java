@@ -28,4 +28,6 @@ public class AppConstant
     public static final String TOPIC_QUEUE_1 = "topic.queue1";
 
     public static final String TOPIC_QUEUE_2 = "topic.queue2";
+
+    public static final String OBJECT_QUEUE = "object.queue";
 }
