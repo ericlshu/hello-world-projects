@@ -73,4 +73,24 @@ public class SpringRabbitListener
     {
         log.warn("消费者[2]接收到[{}]的消息[{}]", AppConstant.DIRECT_QUEUE_2, msg);
     }
+
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(AppConstant.TOPIC_QUEUE_1),
+            exchange = @Exchange(value = AppConstant.TOPIC_EXCHANGE, type = ExchangeTypes.TOPIC),
+            key = "china.#"
+    ))
+    public void listenTopicQueue1(String msg)
+    {
+        log.info("消费者[1]接收到[{}]的消息[{}]", AppConstant.TOPIC_QUEUE_1, msg);
+    }
+
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(AppConstant.TOPIC_QUEUE_2),
+            exchange = @Exchange(value = AppConstant.TOPIC_EXCHANGE, type = ExchangeTypes.TOPIC),
+            key = "#.news"
+    ))
+    public void listenTopicQueue2(String msg)
+    {
+        log.warn("消费者[2]接收到[{}]的消息[{}]", AppConstant.TOPIC_QUEUE_2, msg);
+    }
 }

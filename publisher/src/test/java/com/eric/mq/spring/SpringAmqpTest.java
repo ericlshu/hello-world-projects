@@ -56,4 +56,12 @@ public class SpringAmqpTest
         rabbitTemplate.convertAndSend(AppConstant.DIRECT_EXCHANGE, "yellow", "Warning, something goes wrong!");
         rabbitTemplate.convertAndSend(AppConstant.DIRECT_EXCHANGE, "red", "Danger, keep yourself safe!");
     }
+
+    @Test
+    public void testSendTopicExchange()
+    {
+        rabbitTemplate.convertAndSend(AppConstant.TOPIC_EXCHANGE, "china.news", "喜报！孙悟空大战哥斯拉，胜!");
+        rabbitTemplate.convertAndSend(AppConstant.TOPIC_EXCHANGE, "japan.news", "红色警报！日本乱排核废水，导致海洋生物变异，惊现哥斯拉！");
+        rabbitTemplate.convertAndSend(AppConstant.TOPIC_EXCHANGE, "china.weather", "今天天气不错，我的心情好极了。");
+    }
 }
