@@ -1,5 +1,6 @@
 package com.eric.mq.helloworld;
 
+import com.eric.mq.util.AppConstant;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -28,12 +29,11 @@ public class PublisherTest
         Channel channel = connection.createChannel();
 
         // 3.创建队列
-        String queueName = "simple.queue";
-        channel.queueDeclare(queueName, false, false, false, null);
+        channel.queueDeclare(AppConstant.SIMPLE_QUEUE, false, false, false, null);
 
         // 4.发送消息
         String message = "hello, rabbitmq!";
-        channel.basicPublish("", queueName, null, message.getBytes());
+        channel.basicPublish("", AppConstant.SIMPLE_QUEUE, null, message.getBytes());
         System.out.println("发送消息成功：【" + message + "】");
 
         // 5.关闭通道和连接

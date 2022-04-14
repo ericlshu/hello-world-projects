@@ -1,5 +1,6 @@
 package com.eric.mq.spring;
 
+import com.eric.mq.util.AppConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,8 +22,6 @@ import javax.annotation.Resource;
 @SpringBootTest
 public class SpringAmqpTest
 {
-    public static final String QUEUE_NAME = "simple.queue";
-
     @Resource
     private RabbitTemplate rabbitTemplate;
 
@@ -30,17 +29,23 @@ public class SpringAmqpTest
     public void testSendMessage()
     {
         String message = "Hello, Spring AMQP!";
-        rabbitTemplate.convertAndSend(QUEUE_NAME, message);
+        rabbitTemplate.convertAndSend(AppConstant.SIMPLE_QUEUE, message);
     }
 
     @Test
-    public void testWorkQueue() throws InterruptedException
+    public void testSendWorkQueue() throws InterruptedException
     {
         String message = "hello, message_";
         for (int i = 0; i < 50; i++)
         {
-            rabbitTemplate.convertAndSend(QUEUE_NAME, message + i);
+            rabbitTemplate.convertAndSend(AppConstant.SIMPLE_QUEUE, message + i);
             Thread.sleep(20);
         }
+    }
+
+    @Test
+    public void testSengFanoutExchange()
+    {
+        rabbitTemplate.convertAndSend(AppConstant.FANOUT_EXCHANGE, null, "Hello, everyone!");
     }
 }
