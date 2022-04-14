@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalTime;
+
 /**
  * Description :
  *
@@ -15,9 +17,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpringRabbitListener
 {
-    @RabbitListener(queues = {"simple.queue"})
+    public static final String QUEUE_NAME = "simple.queue";
+
+    // @RabbitListener(queues = {"simple.queue"})
     public void listenSimpleQueueMessage(String msg)
     {
         log.warn("Spring消费者接收到消息 ：[{}]", msg);
+    }
+
+    @RabbitListener(queues = {QUEUE_NAME})
+    public void listenWorkQueueMessage1(String msg) throws InterruptedException
+    {
+        log.info("消费者[1]在[{}]接收到消息[{}]", LocalTime.now(), msg);
+        Thread.sleep(20);
+    }
+
+    @RabbitListener(queues = {QUEUE_NAME})
+    public void listenWorkQueueMessage2(String msg) throws InterruptedException
+    {
+        log.warn("消费者[2]在[{}]接收到消息[{}]", LocalTime.now(), msg);
+        Thread.sleep(200);
     }
 }
