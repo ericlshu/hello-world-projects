@@ -1,4 +1,4 @@
-package cn.itcast.mq.helloworld;
+package com.eric.mq.helloworld;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;

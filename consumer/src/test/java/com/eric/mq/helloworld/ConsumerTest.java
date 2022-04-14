@@ -1,4 +1,4 @@
-package cn.itcast.mq.helloworld;
+package com.eric.mq.helloworld;
 
 import com.rabbitmq.client.*;
 
@@ -32,7 +32,7 @@ public class ConsumerTest
         {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope,
-                    AMQP.BasicProperties properties, byte[] body) throws IOException
+                    AMQP.BasicProperties properties, byte[] body)
             {
                 // 5.处理消息
                 String message = new String(body);
