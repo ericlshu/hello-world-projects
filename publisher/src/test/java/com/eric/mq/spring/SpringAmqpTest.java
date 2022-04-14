@@ -44,8 +44,16 @@ public class SpringAmqpTest
     }
 
     @Test
-    public void testSengFanoutExchange()
+    public void testSendFanoutExchange()
     {
         rabbitTemplate.convertAndSend(AppConstant.FANOUT_EXCHANGE, null, "Hello, everyone!");
+    }
+
+    @Test
+    public void testSendDirectExchange()
+    {
+        rabbitTemplate.convertAndSend(AppConstant.DIRECT_EXCHANGE, "blue", "Hello, everything is OK!");
+        rabbitTemplate.convertAndSend(AppConstant.DIRECT_EXCHANGE, "yellow", "Warning, something goes wrong!");
+        rabbitTemplate.convertAndSend(AppConstant.DIRECT_EXCHANGE, "red", "Danger, keep yourself safe!");
     }
 }

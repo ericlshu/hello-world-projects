@@ -13,7 +13,7 @@ public class AppConstant
 
     public static final String FANOUT_EXCHANGE = "eric.fanout";
 
-    public static final String FANOUT_QUEUE_1 = "fanout.queue1";
+    public static final String DIRECT_EXCHANGE = "eric.direct";
 
-    public static final String FANOUT_QUEUE_2 = "fanout.queue2";
+    public static final String TOPIC_EXCHANGE = "eric.topic";
 }
