@@ -6,6 +6,7 @@ import cn.itcast.hotel.service.IHotelService;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
+import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
@@ -23,6 +24,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Description :
@@ -81,10 +84,7 @@ public class HotelDocumentTest
         // 1.准备Request
         UpdateRequest updateRequest = new UpdateRequest(INDEX_NAME, "61083");
         // 2.准备请求参数
-        updateRequest.doc(
-                "price", "666",
-                "starName", "四钻"
-        );
+        updateRequest.doc("price", "666", "starName", "四钻");
         // 3.发送请求
         client.update(updateRequest, RequestOptions.DEFAULT);
     }
@@ -96,6 +96,27 @@ public class HotelDocumentTest
         DeleteRequest deleteResult = new DeleteRequest(INDEX_NAME, "61083");
         // 2.发送请求
         client.delete(deleteResult, RequestOptions.DEFAULT);
+    }
+
+    @Test
+    void testBulkRequest() throws IOException
+    {
+        // 批量查询酒店数据
+        List<Hotel> hotelList = hotelService.list();
+        // 1.创建Request
+        BulkRequest bulkRequest = new BulkRequest();
+        // 2.准备参数，添加多个新增的Request
+        for (Hotel hotel : hotelList)
+        {
+            // 2.1.转换为文档类型HotelDoc
+            HotelDoc hotelDoc = new HotelDoc(hotel);
+            // 2.2.创建新增文档的Request对象
+            bulkRequest.add(new IndexRequest(INDEX_NAME)
+                                    .id(hotelDoc.getId().toString())
+                                    .source(JSON.toJSONString(hotelDoc), XContentType.JSON));
+        }
+        // 3.发送请求
+        client.bulk(bulkRequest, RequestOptions.DEFAULT);
     }
 
     @BeforeEach
