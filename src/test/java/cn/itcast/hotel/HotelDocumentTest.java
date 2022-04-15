@@ -6,6 +6,7 @@ import cn.itcast.hotel.service.IHotelService;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -13,6 +14,7 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.blobstore.DeleteResult;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,6 +87,15 @@ public class HotelDocumentTest
         );
         // 3.发送请求
         client.update(updateRequest, RequestOptions.DEFAULT);
+    }
+
+    @Test
+    void testDeleteDocument() throws IOException
+    {
+        // 1.准备Request
+        DeleteRequest deleteResult = new DeleteRequest(INDEX_NAME, "61083");
+        // 2.发送请求
+        client.delete(deleteResult, RequestOptions.DEFAULT);
     }
 
     @BeforeEach
