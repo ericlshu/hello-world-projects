@@ -6,7 +6,10 @@ import cn.itcast.hotel.service.IHotelService;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -38,7 +41,7 @@ public class HotelDocumentTest
     private IHotelService hotelService;
 
     @Test
-    void testDocumentCRUD() throws IOException
+    void testCreateDocument() throws IOException
     {
         // 1.根据id查询酒店数据
         Hotel hotel = hotelService.getById(61083L);
@@ -55,6 +58,33 @@ public class HotelDocumentTest
         request.source(json, XContentType.JSON);
         // 3.发送请求
         client.index(request, RequestOptions.DEFAULT);
+    }
+
+    @Test
+    void testGetDocument() throws IOException
+    {
+        // 1.准备Request
+        GetRequest request = new GetRequest(INDEX_NAME, "61083");
+        // 2.发送请求，得到响应
+        GetResponse response = client.get(request, RequestOptions.DEFAULT);
+        // 3.解析响应结果
+        String json = response.getSourceAsString();
+        HotelDoc hotelDoc = JSON.parseObject(json, HotelDoc.class);
+        log.warn("hotelDoc = {}", hotelDoc);
+    }
+
+    @Test
+    void testUpdateDocument() throws IOException
+    {
+        // 1.准备Request
+        UpdateRequest updateRequest = new UpdateRequest(INDEX_NAME, "61083");
+        // 2.准备请求参数
+        updateRequest.doc(
+                "price", "666",
+                "starName", "四钻"
+        );
+        // 3.发送请求
+        client.update(updateRequest, RequestOptions.DEFAULT);
     }
 
     @BeforeEach
