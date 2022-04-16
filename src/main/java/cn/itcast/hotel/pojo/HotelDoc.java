@@ -5,7 +5,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class HotelDoc {
+public class HotelDoc
+{
     private Long id;
     private String name;
     private String address;
@@ -17,8 +18,10 @@ public class HotelDoc {
     private String business;
     private String location;
     private String pic;
+    private Object distance;
 
-    public HotelDoc(Hotel hotel) {
+    public HotelDoc(Hotel hotel)
+    {
         this.id = hotel.getId();
         this.name = hotel.getName();
         this.address = hotel.getAddress();

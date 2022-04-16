@@ -13,12 +13,16 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.geo.GeoPoint;
+import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -53,6 +57,17 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             log.warn("current page : [{}]", page);
             log.warn("size of page : [{}]", size);
             sourceBuilder.from((page - 1) * size).size(size);
+
+            // 按距离排序
+            String location = param.getLocation();
+            if (StringUtils.hasText(location))
+            {
+                log.warn("location     : [{}]", location);
+                sourceBuilder.sort(SortBuilders
+                                           .geoDistanceSort("location", new GeoPoint(location))
+                                           .order(SortOrder.ASC)
+                                           .unit(DistanceUnit.KILOMETERS));
+            }
 
             // 4 发送查询请求
             SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
@@ -127,6 +142,11 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             // 4.4 转换json为对象
             HotelDoc hotelDoc = JSON.parseObject(json, HotelDoc.class);
             log.info("hotelDoc = [{}]", hotelDoc);
+            // 4.5 获取排序值
+            Object[] sortValues = hit.getSortValues();
+            if (sortValues.length > 0)
+                hotelDoc.setDistance(sortValues[0]);
+
             hotels.add(hotelDoc);
         }
         return new PageResult(total, hotels);
