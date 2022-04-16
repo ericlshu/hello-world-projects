@@ -13,11 +13,14 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -41,31 +44,70 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         SearchSourceBuilder sourceBuilder = searchRequest.source();
         try
         {
-            // 2 准备DSL
-            // 2.1 Query
-            String key = param.getKey();
-            if (key == null || "".equals(key))
-                sourceBuilder.query(QueryBuilders.matchAllQuery());
-            else
-                sourceBuilder.query(QueryBuilders.matchQuery("all", key));
+            // 2 准备DSL,构建BoolQuery
+            sourceBuilder.query(buildBasicQuery(param));
 
-            // 2.2 分页
+            // 3 分页
             Integer size = param.getSize();
             Integer page = param.getPage();
             log.warn("current page : [{}]", page);
             log.warn("size of page : [{}]", size);
             sourceBuilder.from((page - 1) * size).size(size);
 
-            // 3. 发送查询请求
+            // 4 发送查询请求
             SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
 
-            // 4. 解析响应结果
+            // 5 解析响应结果
             return handleResponse(searchResponse);
         }
         catch (IOException e)
         {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * 构建BoolQuery
+     *
+     * @param param 请求参数
+     * @return BoolQuery
+     */
+    private QueryBuilder buildBasicQuery(RequestParam param)
+    {
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+        String key = param.getKey();
+        String city = param.getCity();
+        String brand = param.getBrand();
+        String starName = param.getStarName();
+        Integer minPrice = param.getMinPrice();
+        Integer maxPrice = param.getMaxPrice();
+
+        log.warn("query key : [{}]", key);
+        log.warn("city      : [{}]", city);
+        log.warn("brand     : [{}]", brand);
+        log.warn("star name : [{}]", starName);
+        log.warn("min price : [{}]", minPrice);
+        log.warn("max price : [{}]", maxPrice);
+
+        // 关键字检索
+        if (key == null || "".equals(key))
+            boolQuery.must(QueryBuilders.matchAllQuery());
+        else
+            boolQuery.must(QueryBuilders.matchQuery("all", key));
+
+        // 条件过滤
+        if (StringUtils.hasText(city))
+            boolQuery.filter(QueryBuilders.termQuery("city", city));
+        if (StringUtils.hasText(brand))
+            boolQuery.filter(QueryBuilders.termQuery("brand", brand));
+        if (StringUtils.hasText(starName))
+            boolQuery.filter(QueryBuilders.termQuery("starName", starName));
+        if (minPrice != null && maxPrice != null)
+            boolQuery.filter(QueryBuilders.rangeQuery("price")
+                                     .gte(minPrice)
+                                     .lte(maxPrice));
+        return boolQuery;
     }
 
     private PageResult handleResponse(SearchResponse searchResponse) throws IOException
