@@ -9,6 +9,9 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchAllQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -51,20 +54,28 @@ public class HotelDocumentQueryTest
     @Test
     void testMatchAll() throws IOException
     {
-        // 2  设置查询条件
-        builder.query(QueryBuilders.matchAllQuery());
-        execSearch();
+        execSearch(QueryBuilders.matchAllQuery());
     }
 
     @Test
     void testMatch() throws IOException
     {
-        builder.query(QueryBuilders.matchQuery("all", "如家"));
-        execSearch();
+        execSearch(QueryBuilders.matchQuery("all", "如家"));
     }
 
-    private void execSearch() throws IOException
+    @Test
+    void testBoolQuery() throws IOException
     {
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+        boolQuery.must(QueryBuilders.termQuery("city", "上海"));
+        boolQuery.filter(QueryBuilders.rangeQuery("price").lte(250));
+        execSearch(boolQuery);
+    }
+
+    private void execSearch(QueryBuilder queryBuilder) throws IOException
+    {
+        // 2 设置查询条件即DSL参数
+        builder.query(queryBuilder);
         // 3 发送请求，得到响应结果
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
         // 4 解析结果
