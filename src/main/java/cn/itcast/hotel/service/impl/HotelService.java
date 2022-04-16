@@ -18,6 +18,8 @@ import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
+import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -122,7 +124,17 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             boolQuery.filter(QueryBuilders.rangeQuery("price")
                                      .gte(minPrice)
                                      .lte(maxPrice));
-        return boolQuery;
+
+        // 算分函数查询
+        return QueryBuilders
+                .functionScoreQuery(
+                        boolQuery,// 原始查询，boolQuery
+                        new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{// function数组
+                                new FunctionScoreQueryBuilder.FilterFunctionBuilder(
+                                        QueryBuilders.termQuery("isAD", true),// 过滤条件
+                                        ScoreFunctionBuilders.weightFactorFunction(10)   // 算分函数
+                                )
+                        });
     }
 
     private PageResult handleResponse(SearchResponse searchResponse) throws IOException
@@ -146,7 +158,6 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             Object[] sortValues = hit.getSortValues();
             if (sortValues.length > 0)
                 hotelDoc.setDistance(sortValues[0]);
-
             hotels.add(hotelDoc);
         }
         return new PageResult(total, hotels);
