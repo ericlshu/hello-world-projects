@@ -15,13 +15,17 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Description :
@@ -81,6 +85,13 @@ public class HotelDocumentQueryTest
         execSearch(QueryBuilders.matchAllQuery());
     }
 
+    @Test
+    void testHighlight() throws IOException
+    {
+        builder.highlighter(new HighlightBuilder().field("name").requireFieldMatch(false));
+        execSearch(QueryBuilders.matchQuery("all", "如家"));
+    }
+
     private void execSearch(QueryBuilder queryBuilder) throws IOException
     {
         // 2 设置查询条件即DSL参数
@@ -100,6 +111,14 @@ public class HotelDocumentQueryTest
             String json = hit.getSourceAsString();
             // 4.4 转换json为对象
             HotelDoc hotelDoc = JSON.parseObject(json, HotelDoc.class);
+            // 4.5 处理高亮结果
+            Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+            if (!CollectionUtils.isEmpty(highlightFields))
+            {
+                HighlightField highlightField = highlightFields.get("name");
+                if (highlightField != null)
+                    hotelDoc.setName(highlightField.getFragments()[0].string());
+            }
             log.info("hotelDoc = [{}]", hotelDoc);
         }
     }
