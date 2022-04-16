@@ -23,15 +23,19 @@ import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -50,17 +54,17 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         SearchSourceBuilder sourceBuilder = searchRequest.source();
         try
         {
-            // 2 准备DSL,构建BoolQuery
+            // 2.1 准备DSL,构建BoolQuery
             sourceBuilder.query(buildBasicQuery(param));
 
-            // 3 分页
+            // 2.2 分页
             Integer size = param.getSize();
             Integer page = param.getPage();
             log.warn("current page : [{}]", page);
             log.warn("size of page : [{}]", size);
             sourceBuilder.from((page - 1) * size).size(size);
 
-            // 按距离排序
+            // 2.3 按距离排序
             String location = param.getLocation();
             if (StringUtils.hasText(location))
             {
@@ -71,10 +75,13 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
                                            .unit(DistanceUnit.KILOMETERS));
             }
 
-            // 4 发送查询请求
+            // 2.4 高亮显示
+            sourceBuilder.highlighter(new HighlightBuilder().field("name").requireFieldMatch(false));
+
+            // 3 发送查询请求
             SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
 
-            // 5 解析响应结果
+            // 4 解析响应结果
             return handleResponse(searchResponse);
         }
         catch (IOException e)
@@ -100,12 +107,12 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         Integer minPrice = param.getMinPrice();
         Integer maxPrice = param.getMaxPrice();
 
-        log.warn("query key : [{}]", key);
-        log.warn("city      : [{}]", city);
-        log.warn("brand     : [{}]", brand);
-        log.warn("star name : [{}]", starName);
-        log.warn("min price : [{}]", minPrice);
-        log.warn("max price : [{}]", maxPrice);
+        log.warn("query key    : [{}]", key);
+        log.warn("city         : [{}]", city);
+        log.warn("brand        : [{}]", brand);
+        log.warn("star name    : [{}]", starName);
+        log.warn("min price    : [{}]", minPrice);
+        log.warn("max price    : [{}]", maxPrice);
 
         // 关键字检索
         if (key == null || "".equals(key))
@@ -143,7 +150,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         SearchHits searchHits = searchResponse.getHits();
         // 4.1 查询的总条数
         long total = searchHits.getTotalHits().value;
-        log.warn("searchResponse.searchHits.totalHits = [{}]", total);
+        log.warn("total hits   : [{}]", total);
         // 4.2 查询的结果数组
         SearchHit[] hits = searchHits.getHits();
         List<HotelDoc> hotels = new ArrayList<>();
@@ -153,11 +160,19 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             String json = hit.getSourceAsString();
             // 4.4 转换json为对象
             HotelDoc hotelDoc = JSON.parseObject(json, HotelDoc.class);
-            log.info("hotelDoc = [{}]", hotelDoc);
             // 4.5 获取排序值
             Object[] sortValues = hit.getSortValues();
             if (sortValues.length > 0)
                 hotelDoc.setDistance(sortValues[0]);
+            // 4.6 处理高亮结果
+            Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+            if (!CollectionUtils.isEmpty(highlightFields))
+            {
+                HighlightField highlightField = highlightFields.get("name");
+                if (highlightField != null)
+                    hotelDoc.setName(highlightField.getFragments()[0].string());
+            }
+            log.info("hotelDoc = [{}]", hotelDoc);
             hotels.add(hotelDoc);
         }
         return new PageResult(total, hotels);
