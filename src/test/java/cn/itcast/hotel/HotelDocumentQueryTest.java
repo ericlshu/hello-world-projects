@@ -16,6 +16,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,6 +73,15 @@ public class HotelDocumentQueryTest
         execSearch(boolQuery);
     }
 
+    @Test
+    void testPageAndSort() throws IOException
+    {
+        int currentPage = 2, pageSize = 10;
+        builder.sort("price", SortOrder.ASC);
+        builder.from((currentPage - 1) * pageSize).size(pageSize);
+        execSearch(QueryBuilders.matchAllQuery());
+    }
+
     private void execSearch(QueryBuilder queryBuilder) throws IOException
     {
         // 2 设置查询条件即DSL参数
@@ -82,7 +92,7 @@ public class HotelDocumentQueryTest
         SearchHits searchHits = searchResponse.getHits();
         // 4.1 查询的总条数
         long total = searchHits.getTotalHits().value;
-        log.warn("total = [{}]", total);
+        log.warn("searchResponse.searchHits.totalHits = [{}]", total);
         // 4.2 查询的结果数组
         SearchHit[] hits = searchHits.getHits();
         for (SearchHit hit : hits)
