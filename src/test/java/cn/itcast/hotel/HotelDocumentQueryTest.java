@@ -37,19 +37,36 @@ public class HotelDocumentQueryTest
     private SearchRequest searchRequest;
     private SearchSourceBuilder builder;
 
+    @BeforeEach
+    void BeforeEach()
+    {
+        // 0 初始化RestClient对象
+        client = new RestHighLevelClient(RestClient.builder(HttpHost.create("http://110.40.224.64:9200")));
+        // 1 准备Request
+        searchRequest = new SearchRequest(INDEX_NAME);
+        // 2 组织DSL参数
+        builder = searchRequest.source();
+    }
+
     @Test
     void testMatchAll() throws IOException
     {
-        // 2 组织DSL参数
+        // 2  设置查询条件
         builder.query(QueryBuilders.matchAllQuery());
-        // 3 发送请求，得到响应结果
-        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
-
-        handleResponse(searchResponse);
+        execSearch();
     }
 
-    private void handleResponse(SearchResponse searchResponse)
+    @Test
+    void testMatch() throws IOException
     {
+        builder.query(QueryBuilders.matchQuery("all", "如家"));
+        execSearch();
+    }
+
+    private void execSearch() throws IOException
+    {
+        // 3 发送请求，得到响应结果
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
         // 4 解析结果
         SearchHits searchHits = searchResponse.getHits();
         // 4.1 查询的总条数
@@ -65,17 +82,6 @@ public class HotelDocumentQueryTest
             HotelDoc hotelDoc = JSON.parseObject(json, HotelDoc.class);
             log.info("hotelDoc = [{}]", hotelDoc);
         }
-    }
-
-    @BeforeEach
-    void BeforeEach()
-    {
-        // 0 初始化RestClient对象
-        client = new RestHighLevelClient(RestClient.builder(HttpHost.create("http://110.40.224.64:9200")));
-        // 1 准备Request
-        searchRequest = new SearchRequest(INDEX_NAME);
-        // 2 组织DSL参数
-        builder = searchRequest.source();
     }
 
     @AfterEach
