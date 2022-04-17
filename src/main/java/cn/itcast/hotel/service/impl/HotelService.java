@@ -10,12 +10,15 @@ import cn.itcast.hotel.util.AppConstants;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.unit.DistanceUnit;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -158,6 +161,42 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             log.warn("prefix  : {}", prefix);
             log.info("options : {}", result);
             return result;
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void insertOrUpdateById(Long id)
+    {
+        try
+        {
+            // 0.根据id查询酒店数据
+            HotelDoc hotelDoc = new HotelDoc(getById(id));
+            // 1.准备Request对象
+            IndexRequest request = new IndexRequest(AppConstants.INDEX_NAME).id(hotelDoc.getId().toString());
+            // 2.准备Json文档
+            request.source(JSON.toJSONString(hotelDoc), XContentType.JSON);
+            // 3.发送请求
+            restHighLevelClient.index(request, RequestOptions.DEFAULT);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void deleteById(Long id)
+    {
+        try
+        {
+            // 1.准备Request
+            DeleteRequest deleteResult = new DeleteRequest(AppConstants.INDEX_NAME, id.toString());
+            // 2.发送请求
+            restHighLevelClient.delete(deleteResult, RequestOptions.DEFAULT);
         }
         catch (IOException e)
         {

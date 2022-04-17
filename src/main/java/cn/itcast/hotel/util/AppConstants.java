@@ -10,11 +10,10 @@ package cn.itcast.hotel.util;
 public class AppConstants
 {
     public static final String HOTEL_EXCHANGE = "hotel.topic";
-    public static final String EXCHANGE_NAME = "hotel.topic";
-    public static final String INSERT_QUEUE_NAME = "hotel.insert.queue";
-    public static final String DELETE_QUEUE_NAME = "hotel.delete.queue";
-    public static final String INSERT_KEY = "hotel.insert";
-    public static final String DELETE_KEY = "hotel.delete";
+    public static final String HOTEL_INSERT_QUEUE = "hotel.insert.queue";
+    public static final String HOTEL_DELETE_QUEUE = "hotel.delete.queue";
+    public static final String HOTEL_INSERT_ROUTING_KEY = "hotel.insert";
+    public static final String HOTEL_DELETE_ROUTING_KEY = "hotel.delete";
 
     public static final String ELASTIC_SERVER = "http://110.40.224.64:9200";
     public static final String INDEX_NAME = "hotel";
