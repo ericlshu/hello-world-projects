@@ -20,6 +20,12 @@ POST /_analyze
   "text": "黑马程序员学习java太棒了！"
 }
 
+POST /_analyze
+{
+  "analyzer": "pinyin",
+  "text": "好好学习，天天向上"
+}
+
 PUT /eric
 {
   "mappings": {
@@ -382,6 +388,308 @@ GET /hotel/_search
   "highlight": {
     "fields": {
       "name": {"require_field_match": "false"}
+    }
+  }
+}
+
+POST /hotel/_update/1902197537
+{
+    "doc": {
+        "isAD": true
+    }
+}
+POST /hotel/_update/2056126831
+{
+    "doc": {
+        "isAD": true
+    }
+}
+POST /hotel/_update/1989806195
+{
+    "doc": {
+        "isAD": true
+    }
+}
+POST /hotel/_update/2056105938
+{
+    "doc": {
+        "isAD": true
+    }
+}
+
+# DSL实现Bucket聚合并排序
+
+GET /hotel/_search
+{
+  "size": 0,
+  "aggs": {
+    "brandAgg": {
+      "terms": {
+        "field": "brand",
+        "size": 20,
+        "order": {
+          "_count": "asc"
+        }
+      }
+    }
+  }
+}
+
+# 聚合功能，限定聚合范围
+
+GET /hotel/_search
+{
+  "query": {
+    "range": {
+      "price": {
+        "lte": 200
+      }
+    }
+  }, 
+  "size": 0,
+  "aggs": {
+    "brandAgg": {
+      "terms": {
+        "field": "brand",
+        "size": 20,
+        "order": {
+          "_count": "asc"
+        }
+      }
+    }
+  }
+}
+
+# Metrics聚合
+
+GET /hotel/_search
+{
+  "size": 0,
+  "aggs": {
+    "brandAgg": {
+      "terms": {
+        "field": "brand",
+        "size": 20,
+        "order": {
+          "scoreAgg.avg": "desc"
+        }
+      },
+      "aggs": {
+        "scoreAgg": {
+          "stats": {
+            "field": "score"
+          }
+        }
+      }
+    }
+  }
+}
+
+DELETE /test
+
+# 自定义拼音分词器
+
+PUT /test
+{
+  "settings": {
+    "analysis": {
+      "analyzer": { 
+        "my_analyzer": { 
+          "tokenizer": "ik_max_word",
+          "filter": "py"
+        }
+      },
+      "filter": {
+        "py": { 
+          "type": "pinyin",
+          "keep_full_pinyin": false,
+          "keep_joined_full_pinyin": true,
+          "keep_original": true,
+          "limit_first_letter_length": 16,
+          "remove_duplicated_term": true,
+          "none_chinese_pinyin_tokenize": false
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "name":{
+        "type": "text",
+        "analyzer": "my_analyzer",
+        "search_analyzer": "ik_smart"
+      }
+    }
+  }
+}
+
+POST /test/_analyze
+{
+  "analyzer": "my_analyzer",
+  "text": "如家酒店还不粗"
+}
+
+POST /test/_doc/1
+{
+  "id": 1,
+  "name": "狮子"
+}
+POST /test/_doc/2
+{
+  "id": 2,
+  "name": "虱子"
+}
+
+GET /test/_search
+{
+  "query": {
+    "match": {
+      "name": "掉入狮子笼咋办"
+    }
+  }
+}
+
+# 自动补全的索引库
+PUT test2
+{
+  "mappings": {
+    "properties": {
+      "title":{
+        "type": "completion"
+      }
+    }
+  }
+}
+
+# 示例数据
+
+POST test2/_doc
+{
+  "title": ["Sony", "WH-1000XM3"]
+}
+POST test2/_doc
+{
+  "title": ["SK-II", "PITERA"]
+}
+POST test2/_doc
+{
+  "title": ["Nintendo", "switch"]
+}
+
+# 自动补全查询
+
+POST /test2/_search
+{
+  "suggest": {
+    "title_suggest": {
+      "text": "sw",
+      "completion": {
+        "field": "title", 
+        "skip_duplicates": true, 
+        "size": 10
+      }
+    }
+  }
+}
+
+DELETE /hotel
+
+# 酒店数据索引库
+
+PUT /hotel
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "text_anlyzer": {
+          "tokenizer": "ik_max_word",
+          "filter": "py"
+        },
+        "completion_analyzer": {
+          "tokenizer": "keyword",
+          "filter": "py"
+        }
+      },
+      "filter": {
+        "py": {
+          "type": "pinyin",
+          "keep_full_pinyin": false,
+          "keep_joined_full_pinyin": true,
+          "keep_original": true,
+          "limit_first_letter_length": 16,
+          "remove_duplicated_term": true,
+          "none_chinese_pinyin_tokenize": false
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "id":{
+        "type": "keyword"
+      },
+      "name":{
+        "type": "text",
+        "analyzer": "text_anlyzer",
+        "search_analyzer": "ik_smart",
+        "copy_to": "all"
+      },
+      "address":{
+        "type": "keyword",
+        "index": false
+      },
+      "price":{
+        "type": "integer"
+      },
+      "score":{
+        "type": "integer"
+      },
+      "brand":{
+        "type": "keyword",
+        "copy_to": "all"
+      },
+      "city":{
+        "type": "keyword"
+      },
+      "starName":{
+        "type": "keyword"
+      },
+      "business":{
+        "type": "keyword",
+        "copy_to": "all"
+      },
+      "location":{
+        "type": "geo_point"
+      },
+      "pic":{
+        "type": "keyword",
+        "index": false
+      },
+      "all":{
+        "type": "text",
+        "analyzer": "text_anlyzer",
+        "search_analyzer": "ik_smart"
+      },
+      "suggestion":{
+          "type": "completion",
+          "analyzer": "completion_analyzer"
+      }
+    }
+  }
+}
+
+GET /hotel/_search
+
+GET /hotel/_search
+{
+  "suggest": {
+    "suggestions": {
+      "text": "sd",
+      "completion": {
+        "field": "suggestion",
+        "skip_duplicates":true,
+        "size":10
+      }
     }
   }
 }

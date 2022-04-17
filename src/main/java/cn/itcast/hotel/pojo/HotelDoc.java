@@ -3,6 +3,10 @@ package cn.itcast.hotel.pojo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 public class HotelDoc
@@ -20,6 +24,7 @@ public class HotelDoc
     private String pic;
     private Object distance;
     private Boolean isAD;
+    private List<String> suggestion;
 
     public HotelDoc(Hotel hotel)
     {
@@ -34,5 +39,11 @@ public class HotelDoc
         this.business = hotel.getBusiness();
         this.location = hotel.getLatitude() + ", " + hotel.getLongitude();
         this.pic = hotel.getPic();
+        this.suggestion = new ArrayList<>();
+        this.suggestion.add(this.brand);
+        if (this.business.contains("/"))
+            Collections.addAll(suggestion, this.business.split("/"));
+        else
+            this.suggestion.add(this.business);
     }
 }
