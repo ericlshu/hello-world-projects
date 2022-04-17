@@ -5,7 +5,11 @@ import cn.itcast.hotel.pojo.PageResult;
 import cn.itcast.hotel.pojo.RequestParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+import java.util.Map;
+
 public interface IHotelService extends IService<Hotel>
 {
     PageResult search(RequestParam param);
+    Map<String, List<String>> filters();
 }

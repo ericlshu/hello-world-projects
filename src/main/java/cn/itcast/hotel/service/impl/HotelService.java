@@ -22,6 +22,9 @@ import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
@@ -29,11 +32,13 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -88,6 +93,69 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Map<String, List<String>> filters()
+    {
+        Map<String, List<String>> result = new HashMap<>();
+        try
+        {
+            // 1 准备Request
+            SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
+            SearchSourceBuilder builder = searchRequest.source();
+            // 2 组织DSL请求参数
+            // 2.1 清除文档数据
+            builder.size(0);
+            // 2.2 设置聚合参数
+            buildAggregations(builder);
+            // 3.发出请求
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            Aggregations aggregations = searchResponse.getAggregations();
+            if (!ObjectUtils.isEmpty(aggregations))
+            {
+                result.put("品牌", getAggResultByName(aggregations, "brandAgg"));
+                result.put("城市", getAggResultByName(aggregations, "cityAgg"));
+                result.put("星级", getAggResultByName(aggregations, "starAgg"));
+            }
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        return result;
+    }
+
+    private List<String> getAggResultByName(Aggregations aggregations, String aggName)
+    {
+        List<String> keys = new ArrayList<>();
+        // 4.1.根据聚合名称，获取聚合结果
+        Terms termsAgg = aggregations.get(aggName);
+        // 4.2.获取buckets
+        List<? extends Terms.Bucket> buckets = termsAgg.getBuckets();
+        // 4.3.遍历
+        for (Terms.Bucket bucket : buckets)
+        {
+            keys.add(bucket.getKeyAsString());
+        }
+        return keys;
+    }
+
+    private void buildAggregations(SearchSourceBuilder builder)
+    {
+        builder.aggregation(AggregationBuilders
+                                    .terms("brandAgg")
+                                    .field("brand")
+                                    .size(100));
+        builder.aggregation(AggregationBuilders
+                                    .terms("cityAgg")
+                                    .field("city")
+                                    .size(100));
+        builder.aggregation(AggregationBuilders
+                                    .terms("starAgg")
+                                    .field("starName")
+                                    .size(100));
     }
 
     /**
