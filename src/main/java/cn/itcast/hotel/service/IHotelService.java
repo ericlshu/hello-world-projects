@@ -11,5 +11,5 @@ import java.util.Map;
 public interface IHotelService extends IService<Hotel>
 {
     PageResult search(RequestParam param);
-    Map<String, List<String>> filters();
+    Map<String, List<String>> filters(RequestParam param);
 }

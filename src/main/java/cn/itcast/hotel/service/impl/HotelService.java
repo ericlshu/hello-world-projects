@@ -96,7 +96,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
     }
 
     @Override
-    public Map<String, List<String>> filters()
+    public Map<String, List<String>> filters(RequestParam param)
     {
         Map<String, List<String>> result = new HashMap<>();
         try
@@ -105,18 +105,20 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
             SearchSourceBuilder builder = searchRequest.source();
             // 2 组织DSL请求参数
-            // 2.1 清除文档数据
+            // 2.1 构建BoolQuery
+            builder.query(buildBasicQuery(param));
+            // 2.2 清除文档数据
             builder.size(0);
-            // 2.2 设置聚合参数
+            // 2.3 设置聚合参数
             buildAggregations(builder);
             // 3.发出请求
             SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
             Aggregations aggregations = searchResponse.getAggregations();
             if (!ObjectUtils.isEmpty(aggregations))
             {
-                result.put("品牌", getAggResultByName(aggregations, "brandAgg"));
-                result.put("城市", getAggResultByName(aggregations, "cityAgg"));
-                result.put("星级", getAggResultByName(aggregations, "starAgg"));
+                result.put("brand", getAggResultByName(aggregations, "brandAgg"));
+                result.put("city", getAggResultByName(aggregations, "cityAgg"));
+                result.put("starName", getAggResultByName(aggregations, "starAgg"));
             }
         }
         catch (IOException e)
