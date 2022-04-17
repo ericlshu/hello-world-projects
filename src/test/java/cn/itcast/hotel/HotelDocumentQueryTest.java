@@ -1,6 +1,7 @@
 package cn.itcast.hotel;
 
 import cn.itcast.hotel.pojo.HotelDoc;
+import cn.itcast.hotel.util.AppConstants;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
@@ -38,8 +39,6 @@ import java.util.Map;
 @SpringBootTest
 public class HotelDocumentQueryTest
 {
-    public static final String INDEX_NAME = "hotel";
-
     private RestHighLevelClient client;
     private SearchRequest searchRequest;
     private SearchSourceBuilder builder;
@@ -48,9 +47,9 @@ public class HotelDocumentQueryTest
     void BeforeEach()
     {
         // 0 初始化RestClient对象
-        client = new RestHighLevelClient(RestClient.builder(HttpHost.create("http://110.40.224.64:9200")));
+        client = new RestHighLevelClient(RestClient.builder(HttpHost.create(AppConstants.ELASTIC_SERVER)));
         // 1 准备Request
-        searchRequest = new SearchRequest(INDEX_NAME);
+        searchRequest = new SearchRequest(AppConstants.INDEX_NAME);
         // 2 组织DSL参数
         builder = searchRequest.source();
     }

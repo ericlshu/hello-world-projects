@@ -1,5 +1,6 @@
 package cn.itcast.hotel;
 
+import cn.itcast.hotel.util.AppConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
@@ -30,8 +31,6 @@ import java.util.List;
 @SpringBootTest
 public class HotelDocSuggestionTest
 {
-    public static final String INDEX_NAME = "hotel";
-
     private RestHighLevelClient client;
     private SearchRequest searchRequest;
     private SearchSourceBuilder builder;
@@ -40,9 +39,9 @@ public class HotelDocSuggestionTest
     void BeforeEach()
     {
         // 0 初始化RestClient对象
-        client = new RestHighLevelClient(RestClient.builder(HttpHost.create("http://110.40.224.64:9200")));
+        client = new RestHighLevelClient(RestClient.builder(HttpHost.create(AppConstants.ELASTIC_SERVER)));
         // 1 准备Request
-        searchRequest = new SearchRequest(INDEX_NAME);
+        searchRequest = new SearchRequest(AppConstants.INDEX_NAME);
         // 2.1 准备SearchSourceBuilder
         builder = searchRequest.source();
     }

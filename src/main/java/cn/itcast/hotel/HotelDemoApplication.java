@@ -1,5 +1,6 @@
 package cn.itcast.hotel;
 
+import cn.itcast.hotel.util.AppConstants;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -20,6 +21,6 @@ public class HotelDemoApplication
     @Bean
     public RestHighLevelClient restHighLevelClient()
     {
-        return new RestHighLevelClient(RestClient.builder(HttpHost.create("http://110.40.224.64:9200")));
+        return new RestHighLevelClient(RestClient.builder(HttpHost.create(AppConstants.ELASTIC_SERVER)));
     }
 }

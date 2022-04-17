@@ -3,6 +3,7 @@ package cn.itcast.hotel;
 import cn.itcast.hotel.pojo.Hotel;
 import cn.itcast.hotel.pojo.HotelDoc;
 import cn.itcast.hotel.service.IHotelService;
+import cn.itcast.hotel.util.AppConstants;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
@@ -36,8 +37,6 @@ import java.util.List;
 @SpringBootTest
 public class HotelDocumentModifyTest
 {
-    public static final String INDEX_NAME = "hotel";
-
     private RestHighLevelClient client;
 
     @Resource
@@ -56,7 +55,7 @@ public class HotelDocumentModifyTest
         log.info(json);
 
         // 1.准备Request对象
-        IndexRequest request = new IndexRequest(INDEX_NAME).id(hotelDoc.getId().toString());
+        IndexRequest request = new IndexRequest(AppConstants.INDEX_NAME).id(hotelDoc.getId().toString());
         // 2.准备Json文档
         request.source(json, XContentType.JSON);
         // 3.发送请求
@@ -67,7 +66,7 @@ public class HotelDocumentModifyTest
     void testGetDocument() throws IOException
     {
         // 1.准备Request
-        GetRequest request = new GetRequest(INDEX_NAME, "61083");
+        GetRequest request = new GetRequest(AppConstants.INDEX_NAME, "61083");
         // 2.发送请求，得到响应
         GetResponse response = client.get(request, RequestOptions.DEFAULT);
         // 3.解析响应结果
@@ -80,7 +79,7 @@ public class HotelDocumentModifyTest
     void testUpdateDocument() throws IOException
     {
         // 1.准备Request
-        UpdateRequest updateRequest = new UpdateRequest(INDEX_NAME, "61083");
+        UpdateRequest updateRequest = new UpdateRequest(AppConstants.INDEX_NAME, "61083");
         // 2.准备请求参数
         updateRequest.doc("price", "666", "starName", "四钻");
         // 3.发送请求
@@ -91,7 +90,7 @@ public class HotelDocumentModifyTest
     void testDeleteDocument() throws IOException
     {
         // 1.准备Request
-        DeleteRequest deleteResult = new DeleteRequest(INDEX_NAME, "61083");
+        DeleteRequest deleteResult = new DeleteRequest(AppConstants.INDEX_NAME, "61083");
         // 2.发送请求
         client.delete(deleteResult, RequestOptions.DEFAULT);
     }
@@ -109,7 +108,7 @@ public class HotelDocumentModifyTest
             // 2.1.转换为文档类型HotelDoc
             HotelDoc hotelDoc = new HotelDoc(hotel);
             // 2.2.创建新增文档的Request对象
-            bulkRequest.add(new IndexRequest(INDEX_NAME)
+            bulkRequest.add(new IndexRequest(AppConstants.INDEX_NAME)
                                     .id(hotelDoc.getId().toString())
                                     .source(JSON.toJSONString(hotelDoc), XContentType.JSON));
         }
@@ -120,7 +119,7 @@ public class HotelDocumentModifyTest
     @BeforeEach
     void BeforeEach()
     {
-        client = new RestHighLevelClient(RestClient.builder(HttpHost.create("http://110.40.224.64:9200")));
+        client = new RestHighLevelClient(RestClient.builder(HttpHost.create(AppConstants.ELASTIC_SERVER)));
     }
 
     @AfterEach

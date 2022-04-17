@@ -6,6 +6,7 @@ import cn.itcast.hotel.pojo.HotelDoc;
 import cn.itcast.hotel.pojo.PageResult;
 import cn.itcast.hotel.pojo.ReqParam;
 import cn.itcast.hotel.service.IHotelService;
+import cn.itcast.hotel.util.AppConstants;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -49,8 +50,6 @@ import java.util.Map;
 @Service
 public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHotelService
 {
-    public static final String INDEX_NAME = "hotel";
-
     @Resource
     private RestHighLevelClient restHighLevelClient;
 
@@ -59,7 +58,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
     {
         log.warn("param = {}", param);
         // 1 准备Request
-        SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
+        SearchRequest searchRequest = new SearchRequest(AppConstants.INDEX_NAME);
         SearchSourceBuilder sourceBuilder = searchRequest.source();
         try
         {
@@ -106,7 +105,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         try
         {
             // 1 准备Request
-            SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
+            SearchRequest searchRequest = new SearchRequest(AppConstants.INDEX_NAME);
             SearchSourceBuilder builder = searchRequest.source();
             // 2 组织DSL请求参数
             // 2.1 构建BoolQuery
@@ -139,7 +138,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         try
         {
             // 1.准备request
-            SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
+            SearchRequest searchRequest = new SearchRequest(AppConstants.INDEX_NAME);
             // 2.准备DSL
             SearchSourceBuilder builder = searchRequest.source();
             builder.suggest(new SuggestBuilder().addSuggestion("suggestions",
