@@ -54,6 +54,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
     @Override
     public PageResult search(RequestParam param)
     {
+        log.warn("param = {}", param);
         // 1 准备Request
         SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
         SearchSourceBuilder sourceBuilder = searchRequest.source();
@@ -65,15 +66,15 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             // 2.2 分页
             Integer size = param.getSize();
             Integer page = param.getPage();
-            log.warn("current page : [{}]", page);
-            log.warn("size of page : [{}]", size);
+            // log.warn("current page : [{}]", page);
+            // log.warn("size of page : [{}]", size);
             sourceBuilder.from((page - 1) * size).size(size);
 
             // 2.3 按距离排序
             String location = param.getLocation();
             if (StringUtils.hasText(location))
             {
-                log.warn("location     : [{}]", location);
+                // log.warn("location     : [{}]", location);
                 sourceBuilder.sort(SortBuilders
                                            .geoDistanceSort("location", new GeoPoint(location))
                                            .order(SortOrder.ASC)
@@ -177,12 +178,12 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         Integer minPrice = param.getMinPrice();
         Integer maxPrice = param.getMaxPrice();
 
-        log.warn("query key    : [{}]", key);
-        log.warn("city         : [{}]", city);
-        log.warn("brand        : [{}]", brand);
-        log.warn("star name    : [{}]", starName);
-        log.warn("min price    : [{}]", minPrice);
-        log.warn("max price    : [{}]", maxPrice);
+        // log.warn("query key    : [{}]", key);
+        // log.warn("city         : [{}]", city);
+        // log.warn("brand        : [{}]", brand);
+        // log.warn("star name    : [{}]", starName);
+        // log.warn("min price    : [{}]", minPrice);
+        // log.warn("max price    : [{}]", maxPrice);
 
         // 关键字检索
         if (key == null || "".equals(key))
@@ -220,7 +221,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         SearchHits searchHits = searchResponse.getHits();
         // 4.1 查询的总条数
         long total = searchHits.getTotalHits().value;
-        log.warn("total hits   : [{}]", total);
+        log.warn("total = [{}]", total);
         // 4.2 查询的结果数组
         SearchHit[] hits = searchHits.getHits();
         List<HotelDoc> hotels = new ArrayList<>();
