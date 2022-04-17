@@ -1,6 +1,6 @@
 package cn.itcast.hotel;
 
-import cn.itcast.hotel.pojo.RequestParam;
+import cn.itcast.hotel.pojo.ReqParam;
 import cn.itcast.hotel.service.IHotelService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +18,7 @@ class HotelDemoApplicationTests
     @Test
     void contextLoads()
     {
-        Map<String, List<String>> filters = hotelService.filters(new RequestParam());
+        Map<String, List<String>> filters = hotelService.filters(new ReqParam());
         for (Map.Entry<String, List<String>> entry : filters.entrySet())
             System.out.println(entry.getKey() + " = " + entry.getValue());
         // city = [上海, 北京, 深圳]

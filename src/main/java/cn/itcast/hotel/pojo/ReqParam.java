@@ -10,7 +10,7 @@ import lombok.Data;
  * @since jdk-11.0.14
  */
 @Data
-public class RequestParam
+public class ReqParam
 {
     private String key;
     private Integer page;

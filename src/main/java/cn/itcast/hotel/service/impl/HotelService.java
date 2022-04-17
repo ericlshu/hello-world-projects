@@ -4,7 +4,7 @@ import cn.itcast.hotel.mapper.HotelMapper;
 import cn.itcast.hotel.pojo.Hotel;
 import cn.itcast.hotel.pojo.HotelDoc;
 import cn.itcast.hotel.pojo.PageResult;
-import cn.itcast.hotel.pojo.RequestParam;
+import cn.itcast.hotel.pojo.ReqParam;
 import cn.itcast.hotel.service.IHotelService;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -30,6 +30,9 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -52,7 +55,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
     private RestHighLevelClient restHighLevelClient;
 
     @Override
-    public PageResult search(RequestParam param)
+    public PageResult search(ReqParam param)
     {
         log.warn("param = {}", param);
         // 1 准备Request
@@ -97,7 +100,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
     }
 
     @Override
-    public Map<String, List<String>> filters(RequestParam param)
+    public Map<String, List<String>> filters(ReqParam param)
     {
         Map<String, List<String>> result = new HashMap<>();
         try
@@ -128,6 +131,39 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         }
 
         return result;
+    }
+
+    @Override
+    public List<String> getSuggestion(String prefix)
+    {
+        try
+        {
+            // 1.准备request
+            SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
+            // 2.准备DSL
+            SearchSourceBuilder builder = searchRequest.source();
+            builder.suggest(new SuggestBuilder().addSuggestion("suggestions",
+                                                               SuggestBuilders
+                                                                       .completionSuggestion("suggestion")
+                                                                       .prefix(prefix)
+                                                                       .skipDuplicates(true)
+                                                                       .size(10)));
+            // 3.发起请求
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            // 4.结果解析
+            CompletionSuggestion suggestion = searchResponse.getSuggest().getSuggestion("suggestions");
+            List<CompletionSuggestion.Entry.Option> options = suggestion.getOptions();
+            List<String> result = new ArrayList<>(options.size());
+            for (CompletionSuggestion.Entry.Option option : options)
+                result.add(option.getText().toString());
+            log.warn("prefix  : {}", prefix);
+            log.info("options : {}", result);
+            return result;
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     private List<String> getAggResultByName(Aggregations aggregations, String aggName)
@@ -167,7 +203,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
      * @param param 请求参数
      * @return BoolQuery
      */
-    private QueryBuilder buildBasicQuery(RequestParam param)
+    private QueryBuilder buildBasicQuery(ReqParam param)
     {
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
