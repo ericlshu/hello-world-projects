@@ -33,4 +33,16 @@ public class OrderController
         log.debug("patternProperties {}", patternProperties);
         return patternProperties;
     }
+
+    @GetMapping("/query")
+    public String queryOrder()
+    {
+        return "查询订单成功！";
+    }
+
+    @GetMapping("/update")
+    public String updateOrder()
+    {
+        return "查询订单成功！";
+    }
 }
