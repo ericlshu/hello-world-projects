@@ -52,9 +52,18 @@ public class UserController
      * @return 用户
      */
     @GetMapping("/{id}")
-    public User queryById(@PathVariable("id") Long id, @RequestHeader(value = "header", required = false) String header)
+    public User queryById(@PathVariable("id") Long id, @RequestHeader(value = "header", required = false) String header) throws InterruptedException
     {
-        log.info("header = {}", header);
+        if (id == 1)
+        {
+            // 休眠，触发慢调用熔断
+            Thread.sleep(60);
+        }
+        else if (id == 2)
+        {
+            throw new RuntimeException("抛出异常，触发异常熔断；");
+        }
+        // log.info("header = {}", header);
         return userService.queryById(id);
     }
 }
