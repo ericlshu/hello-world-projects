@@ -1,6 +1,7 @@
 package cn.itcast.order;
 
 import cn.itcast.feign.client.UserClient;
+import cn.itcast.feign.config.DefaultFeignConfig;
 import cn.itcast.feign.config.PatternProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,7 +20,7 @@ import org.springframework.web.client.RestTemplate;
  * PatternProperties类移动至feign-api中后，不再位于当前启动类所在包及其子包下，需手动引入；
  */
 @SpringBootApplication
-@EnableFeignClients(clients = {UserClient.class})
+@EnableFeignClients(clients = {UserClient.class}, defaultConfiguration = DefaultFeignConfig.class)
 @Import({PatternProperties.class})
 public class OrderApplication
 {
@@ -39,7 +40,7 @@ public class OrderApplication
         return new RestTemplate();
     }
 
-    /**
+    /*
      * 配置当前模块中所有服务采用随机模式负载均衡规则
      */
     /*@Bean

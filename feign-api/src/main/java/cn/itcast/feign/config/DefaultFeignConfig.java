@@ -1,5 +1,6 @@
 package cn.itcast.feign.config;
 
+import cn.itcast.feign.client.UserClientFallbackFactory;
 import feign.Logger;
 import org.springframework.context.annotation.Bean;
 
@@ -18,5 +19,14 @@ public class DefaultFeignConfig
     public Logger.Level logLevel()
     {
         return Logger.Level.BASIC;
+    }
+
+    /**
+     * 步骤二：将UserClientFallbackFactory注册为一个Bean
+     */
+    @Bean
+    public UserClientFallbackFactory userClientFallbackFactory()
+    {
+        return new UserClientFallbackFactory();
     }
 }

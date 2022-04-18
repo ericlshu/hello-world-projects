@@ -6,13 +6,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 /**
- * Description :
+ * Description : 步骤三：在feign-api项目中的UserClient接口中使用UserClientFallbackFactory
  *
  * @author Eric L SHU
  * @date 2022-04-11 21:11
  * @since jdk-11.0.14
  */
-@FeignClient("user-service")
+@FeignClient(value = "user-service", fallbackFactory = UserClientFallbackFactory.class)
 public interface UserClient
 {
     /**
