@@ -37,12 +37,20 @@ public class OrderController
     @GetMapping("/query")
     public String queryOrder()
     {
+        orderService.queryGoods();
         return "查询订单成功！";
+    }
+
+    @GetMapping("/save")
+    public String saveOrder()
+    {
+        orderService.queryGoods();
+        return "新增订单成功！";
     }
 
     @GetMapping("/update")
     public String updateOrder()
     {
-        return "查询订单成功！";
+        return "更新订单成功！";
     }
 }

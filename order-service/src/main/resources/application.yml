@@ -20,6 +20,8 @@ spring:
       transport:
         # sentinel控制台地址
         dashboard: localhost:8080
+      # Sentinel默认会将Controller方法做context整合，导致链路模式的流控失效
+      web-context-unify: false
 
 #  application:
 #    #order服务的名称
