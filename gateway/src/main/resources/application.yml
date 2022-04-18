@@ -24,6 +24,7 @@ spring:
             - Path=/order/**
       default-filters:
         - AddRequestHeader=header,sudo apt-get money! # 添加请求头
+        - AddRequestHeader=origin,gateway # 添加名为origin的请求头，值为gateway
       # 全局的跨域处理
       globalcors:
         add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题
