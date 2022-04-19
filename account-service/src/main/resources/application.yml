@@ -23,3 +23,20 @@ logging:
     cn.itcast: debug
   pattern:
     dateformat: MM-dd HH:mm:ss:SSS
+seata:
+  registry:
+    # TC服务注册中心的配置，微服务根据这些信息去注册中心获取tc服务地址
+    # 参考tc服务自己的registry.conf中的配置，
+    # 包括：地址、namespace、group、application-name 、cluster
+    type: nacos
+    nacos:
+      server-addr: 120.26.107.127:8848
+      namespace: ""
+      group: DEFAULT_GROUP
+      application: seata-tc-server  # tc服务在nacos中的服务名称
+      username: nacos
+      password: nacos
+  tx-service-group: seata-demo      # 事务组，根据这个获取tc服务的cluster名称
+  service:
+    vgroup-mapping:                 # 事务组与TC服务cluster的映射关系
+      seata-demo: SH
