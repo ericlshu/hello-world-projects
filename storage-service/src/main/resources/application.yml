@@ -4,7 +4,7 @@ spring:
   application:
     name: storage-service
   datasource:
-    url: jdbc:mysql://120.26.107.127:3306/seata
+    url: jdbc:mysql://120.26.107.127:3306/seata?useSSL=false
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: eric
     password: 1234
@@ -40,4 +40,4 @@ seata:
   service:
     vgroup-mapping:                 # 事务组与TC服务cluster的映射关系
       seata-demo: SH
-  data-source-proxy-mode: XA        # 开启数据源代理的XA模式
+  data-source-proxy-mode: AT        # 开启数据源代理的AT模式
