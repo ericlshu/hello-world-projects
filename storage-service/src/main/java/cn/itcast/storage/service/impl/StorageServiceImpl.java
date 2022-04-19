@@ -12,18 +12,22 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Slf4j
 @Service
-public class StorageServiceImpl implements StorageService {
-
+public class StorageServiceImpl implements StorageService
+{
     @Autowired
     private StorageMapper storageMapper;
 
     @Transactional
     @Override
-    public void deduct(String commodityCode, int count) {
+    public void deduct(String commodityCode, int count)
+    {
         log.info("开始扣减库存");
-        try {
+        try
+        {
             storageMapper.deduct(commodityCode, count);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             throw new RuntimeException("扣减库存失败，可能是库存不足！", e);
         }
         log.info("扣减库存成功");

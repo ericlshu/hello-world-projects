@@ -8,6 +8,15 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: eric
     password: 1234
+    hikari:
+      connection-timeout: 10000
+      validation-timeout: 3000
+      idle-timeout: 60000
+      login-timeout: 5
+      max-lifetime: 120000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      read-only: false
   cloud:
     nacos:
       server-addr: 120.26.107.127:8848
