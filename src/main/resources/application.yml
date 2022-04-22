@@ -10,7 +10,6 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
     host: 120.26.107.127
-    password: 1234
 mybatis-plus:
   type-aliases-package: com.heima.item.pojo
   configuration:
