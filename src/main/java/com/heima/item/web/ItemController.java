@@ -1,14 +1,15 @@
 package com.heima.item.web;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.benmanes.caffeine.cache.Cache;
 import com.heima.item.pojo.Item;
 import com.heima.item.pojo.ItemStock;
 import com.heima.item.pojo.PageDTO;
 import com.heima.item.service.IItemService;
 import com.heima.item.service.IItemStockService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,10 +17,16 @@ import java.util.stream.Collectors;
 @RequestMapping("item")
 public class ItemController
 {
-    @Autowired
+    @Resource
     private IItemService itemService;
-    @Autowired
+    @Resource
     private IItemStockService stockService;
+
+    @Resource
+    private Cache<Long, Item> itemCache;
+
+    @Resource
+    private Cache<Long, ItemStock> stockCache;
 
     @GetMapping("list")
     public PageDTO queryItemPage(
@@ -70,14 +77,20 @@ public class ItemController
     @GetMapping("/{id}")
     public Item findById(@PathVariable("id") Long id)
     {
-        return itemService.query()
+        /*return itemService.query()
                 .ne("status", 3).eq("id", id)
-                .one();
+                .one();*/
+        return itemCache.get(id,
+                             key -> itemService.query()
+                                     .ne("status", 3)
+                                     .eq("id", key)
+                                     .one());
     }
 
     @GetMapping("/stock/{id}")
     public ItemStock findStockById(@PathVariable("id") Long id)
     {
-        return stockService.getById(id);
+        // return stockService.getById(id);
+        return stockCache.get(id, key -> stockService.getById(key));
     }
 }
