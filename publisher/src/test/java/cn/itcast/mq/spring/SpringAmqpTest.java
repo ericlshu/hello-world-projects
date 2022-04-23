@@ -55,4 +55,19 @@ public class SpringAmqpTest
                 .build();
         rabbitTemplate.convertAndSend("simple.queue", message);
     }
+
+    /**
+     * 消息超时时间与队列超时时间均有配置时，以较短的时间配置为准
+     */
+    @Test
+    public void testTTLMessage()
+    {
+        Message message = MessageBuilder
+                .withBody("RabbitMQ高级特性之TTL消息".getBytes(StandardCharsets.UTF_8))
+                .setDeliveryMode(MessageDeliveryMode.PERSISTENT)
+                .setExpiration("5000")
+                .build();
+        rabbitTemplate.convertAndSend("ttl.direct", "ttl", message);
+        log.info("TTL消息[{}]发送成功!", message);
+    }
 }
