@@ -1,0 +1,15 @@
+logging:
+  pattern:
+    dateformat: HH:mm:ss:SSS
+  level:
+    cn.itcast: debug
+spring:
+  rabbitmq:
+    host: 110.40.224.64 # rabbitMQ的ip地址
+    port: 5672          # 端口
+    username: eric
+    password: 1234
+    virtual-host: /
+    listener:
+      simple:
+        prefetch: 1
