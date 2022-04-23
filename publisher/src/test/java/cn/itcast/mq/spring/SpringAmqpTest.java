@@ -84,4 +84,32 @@ public class SpringAmqpTest
         CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
         rabbitTemplate.convertAndSend("delay.direct", "delay", message, correlationData);
     }
+
+    @Test
+    public void testLazyQueue()
+    {
+        String msg = "RabbitMQ惰性队列消息";
+        for (int i = 0; i < 10_000; i++)
+        {
+            Message message = MessageBuilder
+                    .withBody((msg + "[" + i + "]").getBytes(StandardCharsets.UTF_8))
+                    .setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT)
+                    .build();
+            rabbitTemplate.convertAndSend("lazy.queue", message);
+        }
+    }
+
+    @Test
+    public void testNormalQueue()
+    {
+        String msg = "RabbitMQ普通队列消息";
+        for (int i = 0; i < 10_000; i++)
+        {
+            Message message = MessageBuilder
+                    .withBody((msg + "[" + i + "]").getBytes(StandardCharsets.UTF_8))
+                    .setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT)
+                    .build();
+            rabbitTemplate.convertAndSend("normal.queue", message);
+        }
+    }
 }

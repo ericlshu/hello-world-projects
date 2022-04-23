@@ -24,4 +24,7 @@ public class AppConstant
     public static final String DELAY_EXCHANGE = "delay.direct";
     public static final String DELAY_QUEUE = "delay.queue";
     public static final String DELAY_ROUTING = "delay";
+    public static final String LAZY_QUEUE = "lazy.queue";
+    public static final String NORMAL_QUEUE = "normal.queue";
+
 }
