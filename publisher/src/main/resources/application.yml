@@ -10,3 +10,12 @@ spring:
     username: eric
     password: 1234
     virtual-host: /
+    # publish-confirm-type：开启publisher-confirm，这里支持两种类型：
+    #   simple：同步等待confirm结果，直到超时
+    #   correlated：异步回调，定义ConfirmCallback，MQ返回结果时会回调这个ConfirmCallback
+    publisher-confirm-type: correlated
+    # publish-returns：开启publish-return功能，同样是基于callback机制，不过是定义ReturnCallback
+    publisher-returns: true
+    # template.mandatory：定义消息路由失败时的策略。true，则调用ReturnCallback；false：则直接丢弃消息
+    template:
+      mandatory: true
