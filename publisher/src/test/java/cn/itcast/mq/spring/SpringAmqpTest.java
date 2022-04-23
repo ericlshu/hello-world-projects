@@ -70,4 +70,18 @@ public class SpringAmqpTest
         rabbitTemplate.convertAndSend("ttl.direct", "ttl", message);
         log.info("TTL消息[{}]发送成功!", message);
     }
+
+    @Test
+    public void testSendDelayMessage()
+    {
+        String msg = "SpringAMQP延迟队列消息！";
+        Message message = MessageBuilder
+                .withBody(msg.getBytes(StandardCharsets.UTF_8))
+                .setDeliveryMode(MessageDeliveryMode.PERSISTENT)
+                .setHeader("x-delay", 5000)
+                .build();
+        log.info("延迟消息[{}]发送成功!", msg);
+        CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
+        rabbitTemplate.convertAndSend("delay.direct", "delay", message, correlationData);
+    }
 }

@@ -9,6 +9,7 @@ package cn.itcast.mq.utils;
  */
 public class AppConstant
 {
+    public static final String TRUE = "true";
     public static final String DIRECT_EXCHANGE = "simple.direct";
     public static final String DIRECT_QUEUE = "simple.queue";
     public static final String ERROR_EXCHANGE = "error.direct";
@@ -18,5 +19,9 @@ public class AppConstant
     public static final String TTL_QUEUE = "ttl.queue";
     public static final String TTL_ROUTING = "ttl";
     public static final String DL_EXCHANGE = "dl.direct";
+    public static final String DL_QUEUE = "dl.queue";
     public static final String DL_ROUTING = "dl";
+    public static final String DELAY_EXCHANGE = "delay.direct";
+    public static final String DELAY_QUEUE = "delay.queue";
+    public static final String DELAY_ROUTING = "delay";
 }
