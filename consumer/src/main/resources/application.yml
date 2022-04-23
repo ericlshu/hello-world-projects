@@ -13,3 +13,8 @@ spring:
     listener:
       simple:
         prefetch: 1
+        # RabbitMQ支持消费者确认机制，即：消费者处理消息后可以向MQ发送ack回执，MQ收到ack回执后才会删除该消息
+        #   manual：手动ack，需要在业务代码结束后，调用api发送ack。
+        #   auto：自动ack，由spring监测listener代码是否出现异常，没有异常则返回ack；抛出异常则返回nack
+        #   none：关闭ack，MQ假定消费者获取消息后会成功处理，因此消息投递后立即被删除
+        acknowledge-mode: auto
