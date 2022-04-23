@@ -26,5 +26,5 @@ public class AppConstant
     public static final String DELAY_ROUTING = "delay";
     public static final String LAZY_QUEUE = "lazy.queue";
     public static final String NORMAL_QUEUE = "normal.queue";
-
+    public static final String QUORUM_QUEUE = "quorum.queue";
 }
