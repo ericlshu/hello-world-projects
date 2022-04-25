@@ -71,6 +71,12 @@
             <artifactId>curator-recipes</artifactId>
             <version>${zookeeper.version}</version>
         </dependency>
+        <!--依赖公共接口模块-->
+        <dependency>
+            <groupId>com.eric</groupId>
+            <artifactId>interface</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

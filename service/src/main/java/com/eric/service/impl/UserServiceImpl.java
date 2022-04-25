@@ -18,6 +18,6 @@ public class UserServiceImpl implements UserService
     @Override
     public String sayHello()
     {
-        return "Hello, Dubbo!";
+        return "Hello, Dubbo Demo!";
     }
 }
