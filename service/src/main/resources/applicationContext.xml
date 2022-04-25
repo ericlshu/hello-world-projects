@@ -15,6 +15,7 @@
     <dubbo:application name="dubbo-service"/>
     <!--注册中心的地址 -->
     <dubbo:registry address="zookeeper://120.26.107.127:2181"/>
+    <!--dubbo的包扫描-->
     <dubbo:annotation package="com.eric.service.impl"/>
 
 </beans>

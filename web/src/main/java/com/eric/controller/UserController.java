@@ -1,7 +1,7 @@
 package com.eric.controller;
 
 import com.eric.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class UserController
 {
-    @Autowired
+    /**
+     * 本地注入 @Autowired
+     * 远程注入 @Reference
+     * 1. 从zookeeper注册中心获取userService的url
+     * 2. 进行RPC
+     * 3. 将结果封装为一个代理对象，给变量赋值
+     */
+    @Reference
     private UserService userService;
 
     @GetMapping("/sayHello")
