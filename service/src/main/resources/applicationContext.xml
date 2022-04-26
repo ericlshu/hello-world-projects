@@ -12,10 +12,15 @@
 
     <!--dubbo的配置-->
     <!--项目名称，唯一-->
-    <dubbo:application name="dubbo-service"/>
+    <dubbo:application name="dubbo-service">
+        <dubbo:parameter key="qos.port" value="44444"/>
+    </dubbo:application>
     <!--注册中心的地址 -->
     <dubbo:registry address="zookeeper://120.26.107.127:2181"/>
     <!--dubbo的包扫描-->
     <dubbo:annotation package="com.eric.service.impl"/>
+    <dubbo:protocol port="20881"/>
+    <!-- 元数据配置 -->
+    <dubbo:metadata-report address="zookeeper://120.26.107.127:2181"/>
 
 </beans>

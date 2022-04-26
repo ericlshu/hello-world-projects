@@ -1,5 +1,6 @@
 package com.eric.service.impl;
 
+import com.eric.pojo.User;
 import com.eric.service.UserService;
 import org.apache.dubbo.config.annotation.Service;
 
@@ -19,5 +20,11 @@ public class UserServiceImpl implements UserService
     public String sayHello()
     {
         return "Hello, Dubbo Demo!";
+    }
+
+    @Override
+    public User findUserById(int id)
+    {
+        return new User(id, "eric", "1234");
     }
 }

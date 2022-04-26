@@ -1,5 +1,7 @@
 package com.eric.service;
 
+import com.eric.pojo.User;
+
 /**
  * Description :
  *
@@ -10,4 +12,6 @@ package com.eric.service;
 public interface UserService
 {
     String sayHello();
+
+    User findUserById(int id);
 }

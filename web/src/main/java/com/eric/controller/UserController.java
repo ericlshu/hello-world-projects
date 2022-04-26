@@ -1,5 +1,6 @@
 package com.eric.controller;
 
+import com.eric.pojo.User;
 import com.eric.service.UserService;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,5 +32,11 @@ public class UserController
     public String sayHello()
     {
         return userService.sayHello();
+    }
+
+    @GetMapping("/findUser")
+    public User findUser(int id)
+    {
+        return userService.findUserById(id);
     }
 }
