@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Description :
+ * 当服务的提供方和消费方都设置了超时时间时，以超时时间较小的为准；
+ * 超时时间建议配置在服务的提供方；
  *
  * @author Eric L SHU
  * @date 2022-04-24 14:27
@@ -25,7 +27,7 @@ public class UserController
      * 2. 进行RPC
      * 3. 将结果封装为一个代理对象，给变量赋值
      */
-    @Reference
+    @Reference(timeout = 2_000)
     private UserService userService;
 
     @GetMapping("/sayHello")
