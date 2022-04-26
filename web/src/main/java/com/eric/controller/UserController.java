@@ -27,7 +27,7 @@ public class UserController
      * 2. 进行RPC
      * 3. 将结果封装为一个代理对象，给变量赋值
      */
-    @Reference(timeout = 2_000)
+    @Reference(timeout = 2_000,version = "v1.0")
     private UserService userService;
 
     @GetMapping("/sayHello")

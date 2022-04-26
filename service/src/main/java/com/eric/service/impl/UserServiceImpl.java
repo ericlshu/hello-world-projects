@@ -2,6 +2,7 @@ package com.eric.service.impl;
 
 import com.eric.pojo.User;
 import com.eric.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.Service;
 
 /**
@@ -23,7 +24,9 @@ import org.apache.dubbo.config.annotation.Service;
  * @since jdk-11.0.14
  */
 // @Service()
-@Service(timeout = 3000, retries = 3)
+@Slf4j
+// @Service(timeout = 3000, retries = 3)
+@Service(version = "v1.0")
 public class UserServiceImpl implements UserService
 {
     @Override
@@ -35,6 +38,7 @@ public class UserServiceImpl implements UserService
     @Override
     public User findUserById(int id)
     {
+        log.info("This is User Service V1.0");
         return new User(id, "eric", "1234");
     }
 }
