@@ -20,39 +20,11 @@ import java.util.List;
  * @date 2022-04-27 22:48
  * @since jdk-11.0.14
  */
-public class CuratorTest1
+public class CuratorCRUDTest
 {
     private CuratorFramework client;
 
-    /**
-     * 建立连接
-     */
-    @Before
-    public void connect()
-    {
-        /*
-         * connectString       list of servers to connect to
-         * sessionTimeoutMs    session timeout
-         * connectionTimeoutMs connection timeout
-         * retryPolicy         retry policy to use
-         */
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(3000, 10);
-        // CuratorFramework client = CuratorFrameworkFactory.newClient(
-        //         "120.26.107.127:2181",
-        //         60_000,
-        //         15_000,
-        //         retryPolicy);
-        // client.start();
-
-        client = CuratorFrameworkFactory.builder()
-                .connectString("120.26.107.127:2181")
-                .sessionTimeoutMs(60_000)
-                .connectionTimeoutMs(15_000)
-                .retryPolicy(retryPolicy)
-                .namespace("eric")
-                .build();
-        client.start();
-    }
+    /******************************************************************************************************************/
 
     @Test
     public void testCreate1() throws Exception
@@ -93,6 +65,8 @@ public class CuratorTest1
         System.out.println("path = " + path);
     }
 
+    /******************************************************************************************************************/
+
     @Test
     public void testGet1() throws Exception
     {
@@ -119,6 +93,53 @@ public class CuratorTest1
         System.out.println("status = " + status);
     }
 
+    /******************************************************************************************************************/
+
+    @Test
+    public void testSet() throws Exception
+    {
+        client.setData().forPath("/app1", "修改数据".getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void testSetWithVersion() throws Exception
+    {
+        Stat status = new Stat();
+        client.getData().storingStatIn(status).forPath("/app1");
+        client.setData().withVersion(status.getVersion())
+                .forPath("/app1", "修改数据with version".getBytes(StandardCharsets.UTF_8));
+    }
+
+    
+    /**
+     * 建立连接
+     */
+    @Before
+    public void connect()
+    {
+        /*
+         * connectString       list of servers to connect to
+         * sessionTimeoutMs    session timeout
+         * connectionTimeoutMs connection timeout
+         * retryPolicy         retry policy to use
+         */
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(3000, 10);
+        // CuratorFramework client = CuratorFrameworkFactory.newClient(
+        //         "120.26.107.127:2181",
+        //         60_000,
+        //         15_000,
+        //         retryPolicy);
+        // client.start();
+
+        client = CuratorFrameworkFactory.builder()
+                .connectString("120.26.107.127:2181")
+                .sessionTimeoutMs(60_000)
+                .connectionTimeoutMs(15_000)
+                .retryPolicy(retryPolicy)
+                .namespace("eric")
+                .build();
+        client.start();
+    }
 
     @After
     public void close()
