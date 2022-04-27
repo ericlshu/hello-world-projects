@@ -5,11 +5,13 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.data.Stat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * Description :
@@ -90,6 +92,33 @@ public class CuratorTest1
         String path = client.create().creatingParentContainersIfNeeded().forPath("/app4/p1");
         System.out.println("path = " + path);
     }
+
+    @Test
+    public void testGet1() throws Exception
+    {
+        // 查询数据 get
+        byte[] data = client.getData().forPath("/app1");
+        System.out.println("data = " + new String(data));
+    }
+
+    @Test
+    public void testGet2() throws Exception
+    {
+        // 查询子节点 ls
+        List<String> nodeList = client.getChildren().forPath("/");
+        System.out.println("nodeList = " + nodeList);
+    }
+
+    @Test
+    public void testGet3() throws Exception
+    {
+        // 查询节点状态信息 ls -s
+        Stat status = new Stat();
+        System.out.println("status = " + status);
+        client.getData().storingStatIn(status).forPath("/app1");
+        System.out.println("status = " + status);
+    }
+
 
     @After
     public void close()
