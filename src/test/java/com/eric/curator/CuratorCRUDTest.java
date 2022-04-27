@@ -110,7 +110,42 @@ public class CuratorCRUDTest
                 .forPath("/app1", "修改数据with version".getBytes(StandardCharsets.UTF_8));
     }
 
-    
+    /******************************************************************************************************************/
+
+    @Test
+    public void testDelete() throws Exception
+    {
+        // 删除单个节点
+        client.delete().forPath("/app1");
+    }
+
+    @Test
+    public void testDeleteAll() throws Exception
+    {
+        // 删除带有子节点的节点
+        client.delete().deletingChildrenIfNeeded().forPath("/app4");
+    }
+
+    @Test
+    public void testDeleteGuaranteed() throws Exception
+    {
+        // 保证删除成功，防止网络抖动，自动重试
+        client.delete().guaranteed().forPath("/app4");
+    }
+
+    @Test
+    public void testDeleteCallback() throws Exception
+    {
+        // 删除回调操作
+        client.delete().guaranteed().inBackground(
+                (client, event) ->
+                {
+                    System.out.println("client = " + client);
+                    System.out.println("event = " + event);
+
+                }).forPath("/app1");
+    }
+
     /**
      * 建立连接
      */
