@@ -6,6 +6,7 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.junit.After;
 import org.junit.Before;
@@ -54,6 +55,19 @@ public class CuratorWatcherTest
                     }
                 });
         pathChildrenCache.start(true);
+    }
+
+    @Test
+    public void testTreeCache() throws Exception
+    {
+        TreeCache treeCache = new TreeCache(client, "/");
+        treeCache.getListenable().addListener(
+                (client, event) ->
+                {
+                    System.out.println("Node changed ...");
+                    System.out.println("event = " + event);
+                });
+        treeCache.start();
     }
 
     /**
