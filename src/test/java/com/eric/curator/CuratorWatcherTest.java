@@ -4,6 +4,8 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.NodeCache;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.junit.After;
 import org.junit.Before;
@@ -33,6 +35,25 @@ public class CuratorWatcherTest
                 });
         // 如果开启监听设置为true，则开启监听时加载缓冲数据
         nodeCache.start(true);
+    }
+
+    @Test
+    public void testPathChildrenCache() throws Exception
+    {
+        PathChildrenCache pathChildrenCache = new PathChildrenCache(client, "/app2", true);
+        pathChildrenCache.getListenable().addListener(
+                (client, event) ->
+                {
+                    System.out.println("Node changed ...");
+                    System.out.println("event = " + event);
+                    if (PathChildrenCacheEvent.Type.CHILD_UPDATED.equals(event.getType()))
+                    {
+                        System.out.println("Data changed ...");
+                        byte[] data = event.getData().getData();
+                        System.out.println("data = " + new String(data));
+                    }
+                });
+        pathChildrenCache.start(true);
     }
 
     /**
