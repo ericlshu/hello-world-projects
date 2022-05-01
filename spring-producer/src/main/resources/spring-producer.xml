@@ -14,11 +14,14 @@
     <context:property-placeholder location="classpath:rabbitmq.properties"/>
 
     <!-- 定义rabbitmq connectionFactory -->
+    <!--确认模式默认关闭，需要手动开启-->
     <rabbit:connection-factory id="connectionFactory" host="${rabbitmq.host}"
                                port="${rabbitmq.port}"
                                username="${rabbitmq.username}"
                                password="${rabbitmq.password}"
-                               virtual-host="${rabbitmq.virtual-host}"/>
+                               virtual-host="${rabbitmq.virtual-host}"
+                               confirm-type="CORRELATED"
+    />
     <!--定义管理交换机、队列-->
     <rabbit:admin connection-factory="connectionFactory"/>
 
@@ -61,4 +64,13 @@
 
     <!--定义rabbitTemplate对象操作可以在代码中方便发送消息-->
     <rabbit:template id="rabbitTemplate" connection-factory="connectionFactory"/>
+
+    <!--消息的可靠性投递-->
+    <rabbit:queue id="confirm_queue" name="confirm_queue"/>
+    <rabbit:direct-exchange id="confirm_exchange" name="confirm_exchange">
+        <rabbit:bindings>
+            <rabbit:binding queue="confirm_queue" key="confirm"/>
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
 </beans>
