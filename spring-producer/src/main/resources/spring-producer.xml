@@ -21,6 +21,7 @@
                                password="${rabbitmq.password}"
                                virtual-host="${rabbitmq.virtual-host}"
                                confirm-type="CORRELATED"
+                               publisher-returns="true"
     />
     <!--定义管理交换机、队列-->
     <rabbit:admin connection-factory="connectionFactory"/>

@@ -2,6 +2,7 @@ package com.eric;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,5 +75,40 @@ public class ProducerTest
             }
         });
         rabbitTemplate.convertAndSend("confirm_exchange", "confirm", "Helle, confirm queue!");
+    }
+
+    /**
+     * 回退模式： 当消息发送给Exchange后，Exchange路由到Queue失败是 才会执行 ReturnCallBack
+     * 1. 开启回退模式:publisher-returns="true"
+     * 2. 设置ReturnCallBack
+     * 3. 设置Exchange处理消息的模式：
+     * 1). 如果消息没有路由到Queue，则丢弃消息（默认）
+     * 2). 如果消息没有路由到Queue，返回给消息发送方ReturnCallBack
+     */
+    @Test
+    public void testReturn() throws InterruptedException
+    {
+        //1. 设置交换机处理失败消息的模式
+        rabbitTemplate.setMandatory(true);
+
+        //2. 设置ReturnsCallBack
+        rabbitTemplate.setReturnsCallback(
+                returned ->
+                {
+                    System.out.println("org.springframework.amqp.rabbit.core.RabbitTemplate.setReturnsCallback");
+                    Message message = returned.getMessage();
+                    int replyCode = returned.getReplyCode();
+                    String replyText = returned.getReplyText();
+                    String exchange = returned.getExchange();
+                    String routingKey = returned.getRoutingKey();
+                    System.out.println(message);    // 消息对象
+                    System.out.println(replyCode);  // 错误码
+                    System.out.println(replyText);  // 错误信息
+                    System.out.println(exchange);   // 交换机
+                    System.out.println(routingKey); // 路由键
+                });
+        //3. 发送消息
+        rabbitTemplate.convertAndSend("confirm_exchange", "error_key", "Helle, confirm queue!");
+        Thread.sleep(1000);
     }
 }
