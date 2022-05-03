@@ -74,4 +74,17 @@
         </rabbit:bindings>
     </rabbit:direct-exchange>
 
+    <rabbit:queue name="ttl_queue" id="ttl_queue">
+        <rabbit:queue-arguments>
+            <!--x-message-ttl指队列的过期时间-->
+            <entry key="x-message-ttl" value="10000" value-type="java.lang.Integer"/>
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+
+    <rabbit:topic-exchange name="ttl_exchange">
+        <rabbit:bindings>
+            <rabbit:binding pattern="ttl.#" queue="ttl_queue"/>
+        </rabbit:bindings>
+    </rabbit:topic-exchange>
+
 </beans>
