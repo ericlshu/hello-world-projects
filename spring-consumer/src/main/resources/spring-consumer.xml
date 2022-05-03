@@ -45,6 +45,7 @@
     <!--消费端限流-->
     <rabbit:listener-container connection-factory="connectionFactory" acknowledge="manual" prefetch="1">
         <rabbit:listener ref="qualityOfServiceListener" queue-names="confirm_queue"/>
+        <rabbit:listener ref="deadLetterExchangeListener" queue-names="test_dlx_queue"/>
     </rabbit:listener-container>
 
 </beans>

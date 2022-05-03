@@ -152,4 +152,27 @@ public class ProducerTest
             }
         }
     }
+
+    /**
+     * 发送测试死信消息：
+     * 1. 过期时间
+     * 2. 长度限制
+     * 3. 消息拒收
+     */
+    @Test
+    public void testDlx()
+    {
+        //1. 死信交换机-过期时间测试
+        rabbitTemplate.convertAndSend("test_dlx_exchange", "test.dlx.eric", "死信交换机-过期时间测试");
+
+        //2. 死信交换机-长度限制测试
+        for (int i = 0; i < 20; i++)
+        {
+            rabbitTemplate.convertAndSend("test_dlx_exchange", "test.dlx.eric", "死信交换机-长度限制测试");
+        }
+
+        //3. 死信交换机-消息拒收测试
+        rabbitTemplate.convertAndSend("test_dlx_exchange", "test.dlx.haha", "死信交换机-消息拒收测试");
+
+    }
 }
