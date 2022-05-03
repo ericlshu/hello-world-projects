@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Description :
  *
@@ -173,6 +176,15 @@ public class ProducerTest
 
         //3. 死信交换机-消息拒收测试
         rabbitTemplate.convertAndSend("test_dlx_exchange", "test.dlx.haha", "死信交换机-消息拒收测试");
+    }
 
+    @Test
+    public void testDelay()
+    {
+        //1. 发送订单消息。将来是在订单系统中，下单成功后，发送消息
+        rabbitTemplate.convertAndSend(
+                "order_exchange",
+                "order.msg",
+                "订单创建时间 : " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
     }
 }

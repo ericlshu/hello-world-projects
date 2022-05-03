@@ -46,6 +46,8 @@
     <rabbit:listener-container connection-factory="connectionFactory" acknowledge="manual" prefetch="1">
         <rabbit:listener ref="qualityOfServiceListener" queue-names="confirm_queue"/>
         <rabbit:listener ref="deadLetterExchangeListener" queue-names="test_dlx_queue"/>
+        <!--延迟队列效果实现：要监听的是死信队列-->
+        <rabbit:listener ref="orderLazyQueueListener" queue-names="order_dlx_queue"/>
     </rabbit:listener-container>
 
 </beans>
