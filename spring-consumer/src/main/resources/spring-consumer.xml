@@ -34,4 +34,12 @@
         <rabbit:listener ref="topicListenerHash1" queue-names="topic_queue_hash_key1"/>
         <rabbit:listener ref="topicListenerHash2" queue-names="topic_queue_hash_key2"/>
     </rabbit:listener-container>
+
+    <!--Consumer Acknowledge="-->
+    <context:component-scan base-package="com.eric.rabbitmq.listener"/>
+
+    <rabbit:listener-container connection-factory="connectionFactory" acknowledge="manual">
+        <rabbit:listener ref="acknowledgeListener" queue-names="confirm_queue"/>
+    </rabbit:listener-container>
+
 </beans>

@@ -2,7 +2,6 @@ package com.eric;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,19 +95,14 @@ public class ProducerTest
                 returned ->
                 {
                     System.out.println("org.springframework.amqp.rabbit.core.RabbitTemplate.setReturnsCallback");
-                    Message message = returned.getMessage();
-                    int replyCode = returned.getReplyCode();
-                    String replyText = returned.getReplyText();
-                    String exchange = returned.getExchange();
-                    String routingKey = returned.getRoutingKey();
-                    System.out.println(message);    // 消息对象
-                    System.out.println(replyCode);  // 错误码
-                    System.out.println(replyText);  // 错误信息
-                    System.out.println(exchange);   // 交换机
-                    System.out.println(routingKey); // 路由键
+                    System.out.println("message    = " + returned.getMessage());    // 消息对象
+                    System.out.println("replyCode  = " + returned.getReplyCode());  // 错误码
+                    System.out.println("replyText  = " + returned.getReplyText());  // 错误信息
+                    System.out.println("exchange   = " + returned.getExchange());   // 交换机
+                    System.out.println("routingKey = " + returned.getRoutingKey()); // 路由键
                 });
         //3. 发送消息
-        rabbitTemplate.convertAndSend("confirm_exchange", "error_key", "Helle, confirm queue!");
+        rabbitTemplate.convertAndSend("confirm_exchange", "confirm", "Helle, confirm queue!");
         Thread.sleep(1000);
     }
 }
