@@ -35,11 +35,16 @@
         <rabbit:listener ref="topicListenerHash2" queue-names="topic_queue_hash_key2"/>
     </rabbit:listener-container>
 
-    <!--Consumer Acknowledge="-->
     <context:component-scan base-package="com.eric.rabbitmq.listener"/>
 
-    <rabbit:listener-container connection-factory="connectionFactory" acknowledge="manual">
+    <!--Consumer Acknowledge-->
+    <!--<rabbit:listener-container connection-factory="connectionFactory" acknowledge="manual">
         <rabbit:listener ref="acknowledgeListener" queue-names="confirm_queue"/>
+    </rabbit:listener-container>-->
+
+    <!--消费端限流-->
+    <rabbit:listener-container connection-factory="connectionFactory" acknowledge="manual" prefetch="1">
+        <rabbit:listener ref="qualityOfServiceListener" queue-names="confirm_queue"/>
     </rabbit:listener-container>
 
 </beans>

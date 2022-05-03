@@ -105,4 +105,14 @@ public class ProducerTest
         rabbitTemplate.convertAndSend("confirm_exchange", "confirm", "Helle, confirm queue!");
         Thread.sleep(1000);
     }
+
+    @Test
+    public void testSend() throws InterruptedException
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            rabbitTemplate.convertAndSend("confirm_exchange", "confirm", "Helle, confirm queue [" + (i + 1) + "]!");
+        }
+        Thread.sleep(1000);
+    }
 }
