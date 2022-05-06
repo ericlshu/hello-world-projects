@@ -8,12 +8,13 @@
     <modules>
         <module>redis-cluster</module>
         <module>jedis-client</module>
+        <module>spring-data</module>
     </modules>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.9.RELEASE</version>
+        <version>2.6.7</version>
     </parent>
 
     <groupId>com.eric</groupId>
