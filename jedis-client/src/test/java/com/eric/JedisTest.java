@@ -1,5 +1,6 @@
 package com.eric;
 
+import com.eric.jedis.util.JedisConnectionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,8 +22,9 @@ public class JedisTest
     @BeforeEach
     void setUp()
     {
-        jedis = new Jedis("120.26.107.127", 6379);
-        jedis.auth("ji9)_Plko");
+        // jedis = new Jedis("120.26.107.127", 6379);
+        // jedis.auth("ji9)_Plko");
+        jedis = JedisConnectionFactory.getJedis();
         jedis.select(0);
     }
 
