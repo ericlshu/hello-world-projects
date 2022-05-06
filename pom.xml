@@ -7,6 +7,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>redis-cluster</module>
+        <module>jedis-client</module>
     </modules>
 
     <parent>
