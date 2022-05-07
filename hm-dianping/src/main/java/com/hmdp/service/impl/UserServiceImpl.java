@@ -54,13 +54,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return Result.fail("手机号格式错误！");
         }
         // 3.验证码校验
-        Object sessionCode = session.getAttribute("code");
+        /*Object sessionCode = session.getAttribute("code");
         String inputCode = loginForm.getCode();
         if (sessionCode == null || !sessionCode.toString().equals(inputCode))
         {
             // 4.1.不一致，报错
             return Result.fail("验证码错误！");
-        }
+        }*/
         // 4.2.一致，根据手机号查询用户
         User user = query().eq("phone", phone).one();
         // 5.判断用户是否存在
@@ -76,8 +76,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         // 7.3.存储
         // 7.4.设置token有效期
         // 8.返回token
-
-        return null;
+        return Result.ok();
     }
 
     private User createUserWithPhone(String phone)
