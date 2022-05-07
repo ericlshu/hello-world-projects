@@ -9,6 +9,7 @@
         <module>redis-cluster</module>
         <module>jedis-client</module>
         <module>spring-data</module>
+        <module>hm-dianping</module>
     </modules>
 
     <parent>
