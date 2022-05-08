@@ -2,19 +2,24 @@ package com.hmdp.service.impl;
 
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hmdp.dto.Result;
 import com.hmdp.entity.Shop;
 import com.hmdp.mapper.ShopMapper;
 import com.hmdp.service.IShopService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hmdp.utils.RedisConstants;
+import com.hmdp.utils.RedisData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -24,16 +29,69 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
+    private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
+
     @Override
     public Result queryById(Long id)
     {
 
         // Shop shop = queryWithCachePenetration(id);
-        Shop shop = queryWithCacheBreakdownByMutex(id);
-        if (shop == null)
-            return Result.fail("店铺不存在，请重试！");
-        else
-            return Result.ok(shop);
+        // Shop shop = queryWithCacheBreakdownByMutex(id);
+        Shop shop = queryWithCacheBreakdownByLogicalExpire(id);
+        if (shop == null) return Result.fail("店铺不存在，请重试！");
+        else return Result.ok(shop);
+    }
+
+    /**
+     * 通过逻辑过期解决缓存击穿问题
+     */
+    private Shop queryWithCacheBreakdownByLogicalExpire(Long id)
+    {
+        String key = RedisConstants.CACHE_SHOP_KEY + id;
+
+        // 1 从redis查询商铺缓存
+        String shopJson = stringRedisTemplate.opsForValue().get(key);
+        log.debug("shopJson : {}", shopJson);
+
+        // 2 未命中数据，返回空值
+        if (StrUtil.isBlank(shopJson))
+        {
+            return null;
+        }
+        // 3 命中数据，需要先把json反序列化为对象
+        RedisData redisData = JSONUtil.toBean(shopJson, RedisData.class);
+        Shop shop = JSONUtil.toBean((JSONObject) redisData.getData(), Shop.class);
+        LocalDateTime expireTime = redisData.getExpireTime();
+        // 4 判断是否过期
+        if (LocalDateTime.now().isBefore(expireTime))
+        {
+            // 未过期，直接返回店铺信息
+            return shop;
+        }
+        // 5 已过期，需要缓存重建
+
+        String lockKey = RedisConstants.LOCK_SHOP_KEY + id;
+        // 6 获取互斥锁
+        boolean lock = obtainMutex(lockKey);
+        if (lock)
+        {
+            try
+            {
+                // 开启独立线程，实现缓存重建
+                CACHE_REBUILD_EXECUTOR.submit(() -> saveShop2Redis(id, 30L));
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
+            finally
+            {
+                // 释放锁
+                releaseMutex(lockKey);
+            }
+        }
+        // 7 返回过期的商铺信息
+        return shop;
     }
 
     /**
@@ -163,11 +221,18 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
     private boolean obtainMutex(String key)
     {
-        return BooleanUtil.isTrue(stringRedisTemplate.opsForValue().setIfAbsent(key, "mutex", 10, TimeUnit.SECONDS));
+        return BooleanUtil.isTrue(stringRedisTemplate.opsForValue().setIfAbsent(key, "mutex", RedisConstants.LOCK_SHOP_TTL, TimeUnit.SECONDS));
     }
 
     private void releaseMutex(String key)
     {
         stringRedisTemplate.delete(key);
+    }
+
+    public void saveShop2Redis(Long id, Long expireSeconds)
+    {
+        Shop shop = getById(id);
+        RedisData redisData = new RedisData(LocalDateTime.now().plusSeconds(expireSeconds), shop);
+        stringRedisTemplate.opsForValue().set(RedisConstants.CACHE_SHOP_KEY + id, JSONUtil.toJsonStr(redisData));
     }
 }

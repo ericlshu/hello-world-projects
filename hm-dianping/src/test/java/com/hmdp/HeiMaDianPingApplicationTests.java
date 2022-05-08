@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hmdp.entity.ShopType;
 import com.hmdp.service.IShopTypeService;
+import com.hmdp.service.impl.ShopServiceImpl;
 import com.hmdp.utils.RedisConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,9 @@ class HeiMaDianPingApplicationTests
     @Resource
     private IShopTypeService typeService;
 
+    @Resource
+    private ShopServiceImpl shopService;
+
     @Test
     void testOpsForList()
     {
@@ -39,5 +43,11 @@ class HeiMaDianPingApplicationTests
             shopTypeList.forEach(value ->log.debug("value = {}", value));
             redisTemplate.opsForList().leftPushAll(RedisConstants.CACHE_TYPE_KEY, shopTypeList);
         }
+    }
+
+    @Test
+    void testSaveShop2redis()
+    {
+        shopService.saveShop2Redis(1L, 20L);
     }
 }
