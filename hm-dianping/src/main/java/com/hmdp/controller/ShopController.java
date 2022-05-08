@@ -58,8 +58,10 @@ public class ShopController
     public Result updateShop(@RequestBody Shop shop)
     {
         // 写入数据库
-        shopService.updateById(shop);
-        return Result.ok();
+        // shopService.updateById(shop);
+        // return Result.ok();
+        log.info("更新店铺信息并删除缓存");
+        return shopService.update(shop);
     }
 
     /**
