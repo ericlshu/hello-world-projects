@@ -32,23 +32,36 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         String shopJson = stringRedisTemplate.opsForValue().get(key);
         log.debug("shopJson : {}", shopJson);
 
-        // 2.1 存在则返回
-        if (!StrUtil.isBlank(shopJson))
+        // 2.1 命中数据，直接返回
+        if (StrUtil.isNotBlank(shopJson))
         {
             Shop shop = JSONUtil.toBean(shopJson, Shop.class);
             return Result.ok(shop);
         }
-        // 2.2 不存在则根据id查询db
-        Shop shop = getById(id);
-        log.debug("shop : {}", shop);
-
-        // 3.1 不存在则返回异常
-        if (shop == null)
+        // 2.2 命中空值，抛出异常
+        else if (shopJson != null)
+        {
+            // shopJson = ""
             return Result.fail("店铺不存在，请重试！");
-        // 3.2 存在则返回数据
-        stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(shop), RedisConstants.CACHE_SHOP_TTL, TimeUnit.MINUTES);
+        }
+        // 2.3 未命中数据，也未命中空对象，则查询db
+        else // shopJson == null
+        {
+            Shop shop = getById(id);
+            log.debug("shop : {}", shop);
 
-        return Result.ok(shop);
+            // 3.1 不存在则返回异常
+            if (shop == null)
+            {
+                // 将空值写入redis，避免缓存穿透
+                stringRedisTemplate.opsForValue().set(key, "", RedisConstants.CACHE_NULL_TTL, TimeUnit.MINUTES);
+                return Result.fail("店铺不存在，请重试！");
+            }
+            // 3.2 存在则返回数据
+            stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(shop), RedisConstants.CACHE_SHOP_TTL, TimeUnit.MINUTES);
+
+            return Result.ok(shop);
+        }
     }
 
     @Override
