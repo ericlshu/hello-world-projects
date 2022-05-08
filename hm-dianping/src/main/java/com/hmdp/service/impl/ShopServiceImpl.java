@@ -1,14 +1,12 @@
 package com.hmdp.service.impl;
 
-import cn.hutool.core.util.BooleanUtil;
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hmdp.dto.Result;
 import com.hmdp.entity.Shop;
 import com.hmdp.mapper.ShopMapper;
 import com.hmdp.service.IShopService;
+import com.hmdp.utils.CacheClient;
 import com.hmdp.utils.RedisConstants;
 import com.hmdp.utils.RedisData;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -29,7 +25,10 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-    private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
+    @Resource
+    private CacheClient cacheClient;
+
+    // private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
 
     @Override
     public Result queryById(Long id)
@@ -37,15 +36,26 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
         // Shop shop = queryWithCachePenetration(id);
         // Shop shop = queryWithCacheBreakdownByMutex(id);
-        Shop shop = queryWithCacheBreakdownByLogicalExpire(id);
+        // Shop shop = queryWithCacheBreakdownByLogicalExpire(id);
+
+        // Shop shop = cacheClient.queryWithCachePenetrationByEmptyObject(
+        //         RedisConstants.CACHE_SHOP_KEY, id, Shop.class,
+        //         this::getById,  // key -> getById(key),
+        //         RedisConstants.CACHE_SHOP_TTL, TimeUnit.MINUTES);
+
+        Shop shop = cacheClient.queryWithCacheBreakdownByLogicalExpire(
+                RedisConstants.CACHE_SHOP_KEY, id, Shop.class,
+                this::getById,  // key -> getById(key),
+                RedisConstants.CACHE_SHOP_TTL, TimeUnit.MINUTES);
+
         if (shop == null) return Result.fail("店铺不存在，请重试！");
         else return Result.ok(shop);
     }
 
-    /**
+    /*
      * 通过逻辑过期解决缓存击穿问题
      */
-    private Shop queryWithCacheBreakdownByLogicalExpire(Long id)
+    /*private Shop queryWithCacheBreakdownByLogicalExpire(Long id)
     {
         String key = RedisConstants.CACHE_SHOP_KEY + id;
 
@@ -92,12 +102,12 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         }
         // 7 返回过期的商铺信息
         return shop;
-    }
+    }*/
 
-    /**
+    /*
      * 通过互斥锁解决缓存击穿问题
      */
-    private Shop queryWithCacheBreakdownByMutex(Long id)
+    /*private Shop queryWithCacheBreakdownByMutex(Long id)
     {
         String key = RedisConstants.CACHE_SHOP_KEY + id;
 
@@ -158,12 +168,13 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
                 releaseMutex(lockKey);
             }
         }
-    }
+    }*/
 
-    /**
+
+    /*
      * 通过缓存空对象解决缓存穿透问题
      */
-    private Shop queryWithCachePenetration(Long id)
+    /*private Shop queryWithCachePenetration(Long id)
     {
         String key = RedisConstants.CACHE_SHOP_KEY + id;
 
@@ -200,7 +211,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
             return shop;
         }
-    }
+    }*/
 
     @Override
     @Transactional
@@ -219,7 +230,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         return Result.ok();
     }
 
-    private boolean obtainMutex(String key)
+    /*private boolean obtainMutex(String key)
     {
         return BooleanUtil.isTrue(stringRedisTemplate.opsForValue().setIfAbsent(key, "mutex", RedisConstants.LOCK_SHOP_TTL, TimeUnit.SECONDS));
     }
@@ -227,7 +238,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     private void releaseMutex(String key)
     {
         stringRedisTemplate.delete(key);
-    }
+    }*/
 
     public void saveShop2Redis(Long id, Long expireSeconds)
     {
