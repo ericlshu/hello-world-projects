@@ -43,7 +43,7 @@ public class ShopTypeServiceImpl extends ServiceImpl<ShopTypeMapper, ShopType> i
             shopTypeList = query().orderByAsc("sort").list();
             Assert.notEmpty(shopTypeList, "商铺列表异常！");
             shopTypeList.forEach(value -> log.debug("value = {}", value));
-            redisTemplate.opsForList().leftPushAll(RedisConstants.CACHE_TYPE_KEY, shopTypeList);
+            redisTemplate.opsForList().rightPushAll(RedisConstants.CACHE_TYPE_KEY, shopTypeList);
             redisTemplate.expire(RedisConstants.CACHE_TYPE_KEY, 1, TimeUnit.DAYS);
         }
         return Result.ok(shopTypeList);
