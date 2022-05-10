@@ -138,16 +138,16 @@ public class CacheClient
         String key = prefix + id;
 
         // 1 从redis查询商铺缓存
-        String shopJson = stringRedisTemplate.opsForValue().get(key);
-        log.debug("shopJson : {}", shopJson);
+        String json = stringRedisTemplate.opsForValue().get(key);
+        log.debug("json : {}", json);
 
         // 2 未命中数据，返回空值
-        if (StrUtil.isBlank(shopJson))
+        if (StrUtil.isBlank(json))
         {
             return null;
         }
         // 3 命中数据，需要先把json反序列化为对象
-        RedisData redisData = JSONUtil.toBean(shopJson, RedisData.class);
+        RedisData redisData = JSONUtil.toBean(json, RedisData.class);
         Result result = JSONUtil.toBean((JSONObject) redisData.getData(), clazz);
         LocalDateTime expireTime = redisData.getExpireTime();
         // 4 判断是否过期
