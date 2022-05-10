@@ -48,6 +48,8 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         boolean success = secKillVoucherService.update()
                 .setSql("stock = stock - 1")
                 .eq("voucher_id", voucherId)
+                // .eq("stock", voucher.getStock())    // CAS乐观锁解决超卖问题，但会造成失败率降低的问题
+                .gt("stock", 0)
                 .update();
         if (!success)
             return Result.fail("优惠券已抢完！");
