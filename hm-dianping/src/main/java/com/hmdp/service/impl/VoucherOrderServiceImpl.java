@@ -12,12 +12,16 @@ import com.hmdp.utils.SimpleRedisLock;
 import com.hmdp.utils.UserHolder;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -35,9 +39,48 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     @Resource
     private RedissonClient redissonClient;
 
-    @Override
+    private static final DefaultRedisScript<Long> SECKILL_SCRIPT;
 
+    static
+    {
+        SECKILL_SCRIPT = new DefaultRedisScript<>();
+        SECKILL_SCRIPT.setLocation(new ClassPathResource("lua/secKill.lua"));
+        SECKILL_SCRIPT.setResultType(Long.class);
+    }
+
+    @Override
     public Result secKill(Long voucherId)
+    {
+        Long userId = UserHolder.getUser().getId();
+        long orderId = redisIdWorker.nextId("order");
+
+        // 1.执行lua脚本
+        int result = Objects.requireNonNull(stringRedisTemplate.execute(
+                SECKILL_SCRIPT,
+                Collections.emptyList(),
+                voucherId.toString(),
+                userId.toString()
+        )).intValue();
+
+        // 2.判断结果
+        if (result != 0)
+        {
+            // 2.1.不为0，代表没有购买资格
+            if (result == 1)
+                return Result.fail("优惠券已抢完！");
+            else if (result == 2)
+                return Result.fail("请勿重复下单！");
+        }
+        else
+        {
+            // TODO 2.2.有购买资格，把下单信息保存到阻塞队列
+        }
+
+        // 3.返回订单id
+        return Result.ok(orderId);
+    }
+
+    public Result secKillBak(Long voucherId)
     {
         // 1. 查询优惠券
         SeckillVoucher voucher = secKillVoucherService.getById(voucherId);
