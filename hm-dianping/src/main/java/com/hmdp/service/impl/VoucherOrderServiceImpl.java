@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, VoucherOrder> implements IVoucherOrderService
@@ -54,18 +55,25 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         if (voucher.getStock() < 1)
             return Result.fail("优惠券已抢完！");
 
-        return creatVoucherOrder(voucherId);
+        try
+        {
+            return creatVoucherOrder(voucherId);
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
-    public Result creatVoucherOrder(Long voucherId)
+    public Result creatVoucherOrder(Long voucherId) throws InterruptedException
     {
         // 添加一人一单校验功能
         Long userId = UserHolder.getUser().getId();
 
         RLock redisLock = redissonClient.getLock("lock:order:" + userId);
 
-        if (!redisLock.tryLock())
+        if (!redisLock.tryLock(1, TimeUnit.SECONDS))
             return Result.fail("请勿重复下单！");
 
         long orderId;
