@@ -35,9 +35,9 @@ public class BlogController
     public Result likeBlog(@PathVariable("id") Long id)
     {
         // 修改点赞数量
-        blogService.update()
-                .setSql("liked = liked + 1").eq("id", id).update();
-        return Result.ok();
+        // blogService.update()
+        //         .setSql("liked = liked + 1").eq("id", id).update();
+        return blogService.likeBlog(id);
     }
 
     @GetMapping("/of/me")
