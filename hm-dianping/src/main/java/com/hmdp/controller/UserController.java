@@ -100,4 +100,11 @@ public class UserController
         log.info("用户签到功能");
         return userService.sign();
     }
+
+    @GetMapping("/sign/count")
+    public Result signCount()
+    {
+        log.info("用户签到统计功能");
+        return userService.signCount();
+    }
 }
