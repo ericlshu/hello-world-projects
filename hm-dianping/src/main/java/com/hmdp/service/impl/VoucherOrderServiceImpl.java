@@ -64,7 +64,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     private void init()
     {
         log.info("线程池异步提交！");
-        SECKILL_ORDER_EXECUTOR.submit(new VoucherOrderHandler());
+        // SECKILL_ORDER_EXECUTOR.submit(new VoucherOrderHandler());
     }
 
     private class VoucherOrderHandler implements Runnable
