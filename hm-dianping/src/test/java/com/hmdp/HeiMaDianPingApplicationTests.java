@@ -221,4 +221,22 @@ class HeiMaDianPingApplicationTests
             stringRedisTemplate.opsForGeo().add(key, locations);
         }
     }
+
+    @Test
+    void testHyperLogLog()
+    {
+        String[] values = new String[1_000];
+        int j;
+        for (int i = 0; i < 100_000; i++)
+        {
+            j = i % 1000;
+            values[j] = "user_" + i;
+            if (j == 999)
+                // 每1000条数据发送到Redis一次
+                stringRedisTemplate.opsForHyperLogLog().add("hll", values);
+        }
+        // 统计数量
+        Long count = stringRedisTemplate.opsForHyperLogLog().size("hll");
+        System.out.println("count = " + count);
+    }
 }
