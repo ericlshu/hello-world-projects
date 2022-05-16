@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.resps.ScanResult;
 
 import java.util.HashMap;
@@ -152,5 +153,57 @@ public class JedisTest
                 jedis.hmset("test:small:hash_" + k, map);
             }
         }
+    }
+
+    @Test
+    void testSingle()
+    {
+        long b = System.currentTimeMillis();
+        for (int i = 1; i <= 10_000; i++)
+        {
+            jedis.set("test:key_" + i, "value_" + i);
+        }
+        long e = System.currentTimeMillis();
+        System.out.println("time: " + (e - b));
+    }
+
+    @Test
+    void testBatch()
+    {
+        String[] arr = new String[2000];
+        int j;
+        long b = System.currentTimeMillis();
+        for (int i = 1; i <= 10_000; i++)
+        {
+            j = (i % 1000) << 1;
+            arr[j] = "test:key_" + i;
+            arr[j + 1] = "value_" + i;
+            if (j == 0)
+            {
+                jedis.mset(arr);
+            }
+        }
+        long e = System.currentTimeMillis();
+        System.out.println("time: " + (e - b));
+    }
+
+    @Test
+    void testPipeline()
+    {
+        // 创建管道
+        Pipeline pipeline = jedis.pipelined();
+        long b = System.currentTimeMillis();
+        for (int i = 1; i <= 10_000; i++)
+        {
+            // 放入命令到管道
+            pipeline.set("test:key_" + i, "value_" + i);
+            if (i % 1000 == 0)
+            {
+                // 每放入1000条命令，批量执行
+                pipeline.sync();
+            }
+        }
+        long e = System.currentTimeMillis();
+        System.out.println("time: " + (e - b));
     }
 }
