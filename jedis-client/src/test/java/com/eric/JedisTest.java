@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.resps.ScanResult;
+import redis.clients.jedis.ScanResult;
 
 import java.util.HashMap;
 import java.util.List;
