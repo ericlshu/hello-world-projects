@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.resps.ScanResult;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,15 @@ public class JedisTest
         // jedis.auth("ji9)_Plko");
         jedis = JedisConnectionFactory.getJedis();
         jedis.select(0);
+    }
+
+    @AfterEach
+    void tearDown()
+    {
+        if (jedis != null)
+        {
+            jedis.close();
+        }
     }
 
     @Test
@@ -107,12 +117,40 @@ public class JedisTest
         } while (!cursor.equals("0"));
     }
 
-    @AfterEach
-    void tearDown()
+    @Test
+    void testBigHash()
     {
-        if (jedis != null)
+        Map<String, String> map = new HashMap<>();
+        for (int i = 1; i <= 10_000; i++)
         {
-            jedis.close();
+            map.put("key_" + i, "value_" + i);
+        }
+        jedis.hmset("test:big:hash", map);
+    }
+
+    @Test
+    void testBigString()
+    {
+        for (int i = 1; i <= 10_000; i++)
+        {
+            jedis.set("test:str:key_" + i, "value_" + i);
+        }
+    }
+
+    @Test
+    void testSmallHash()
+    {
+        int hashSize = 100;
+        Map<String, String> map = new HashMap<>(hashSize);
+        for (int i = 1; i <= 10_000; i++)
+        {
+            int k = (i - 1) / hashSize;
+            int v = i % hashSize;
+            map.put("key_" + v, "value_" + v);
+            if (v == 0)
+            {
+                jedis.hmset("test:small:hash_" + k, map);
+            }
         }
     }
 }
