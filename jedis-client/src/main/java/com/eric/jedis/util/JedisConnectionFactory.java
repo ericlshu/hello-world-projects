@@ -21,7 +21,7 @@ public class JedisConnectionFactory
         jedisPoolConfig.setMaxTotal(10);
         jedisPoolConfig.setMaxIdle(10);
         jedisPoolConfig.setMinIdle(0);
-        JEDIS_POOL = new JedisPool(jedisPoolConfig, "120.26.107.127", 6379, 1000, "ji9)_Plko");
+        JEDIS_POOL = new JedisPool(jedisPoolConfig, "192.168.3.33", 6379, 1000);
     }
 
     public static Jedis getJedis()
