@@ -4,6 +4,7 @@ import com.eric.domain.Comment;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,14 +27,14 @@ public class CommentServiceTest
     public void testSaveComment()
     {
         Comment comment = new Comment();
-        comment.setArticleid("100000");
+        comment.setArticleId("100000");
         comment.setContent("测试添加的数据");
-        comment.setCreatedatetime(LocalDateTime.now());
+        comment.setCreateTime(LocalDateTime.now());
         comment.setUserid("1003");
         comment.setNickname("凯撒大帝");
         comment.setState("1");
-        comment.setLikenum(0);
-        comment.setReplynum(0);
+        comment.setLikeNum(0);
+        comment.setReplyNum(0);
         commentService.saveComment(comment);
     }
 
@@ -57,4 +58,23 @@ public class CommentServiceTest
         System.out.println(comment);
     }
 
+    /**
+     * 测试根据父id查询子评论的分页列表
+     */
+    @Test
+    public void testFindCommentListPageByParentId()
+    {
+        Page<Comment> pageResponse = commentService.findCommentListPageByParentId("3", 1, 2);
+        System.out.println("----总记录数:" + pageResponse.getTotalElements());
+        System.out.println("----当页数据:" + pageResponse.getContent());
+    }
+
+    /**
+     * 点赞数+1
+     */
+    @Test
+    public void testUpdateCommentLikeNum()
+    {
+        commentService.updateCommentLikeNum("62973e07cee32069a086939d");
+    }
 }

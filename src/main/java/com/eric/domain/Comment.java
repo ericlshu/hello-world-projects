@@ -31,14 +31,14 @@ public class Comment implements Serializable
     private String id;                      //主键
     @Field("content")
     private String content;                 //吐槽内容
-    private Date publishtime;               //发布日期
+    private Date publishTime;               //发布日期
     @Indexed
     private String userid;                  //发布人ID
     private String nickname;                //昵称
-    private LocalDateTime createdatetime;   //评论的日期时间
-    private Integer likenum;                //点赞数
-    private Integer replynum;               //回复数
+    private LocalDateTime createTime;       //评论的日期时间
+    private Integer likeNum;                //点赞数
+    private Integer replyNum;               //回复数
     private String state;                   //状态
-    private String parentid;                //上级ID
-    private String articleid;
+    private String parentId;                //上级ID
+    private String articleId;
 }
