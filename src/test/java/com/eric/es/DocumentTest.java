@@ -2,6 +2,8 @@ package com.eric.es;
 
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -226,5 +228,20 @@ public class DocumentTest
         {
             System.out.println("数据未发生变更！");
         }
+    }
+
+    @Test
+    public void testDelete() throws IOException
+    {
+        // 1.构建请求
+        DeleteRequest deleteRequest = new DeleteRequest("test_posts", "3");
+
+        // 2.执行操作
+        DeleteResponse deleteResponse = client.delete(deleteRequest, RequestOptions.DEFAULT);
+
+        // 3.获取结果
+        System.out.println(deleteResponse.getId());
+        System.out.println(deleteResponse.getIndex());
+        System.out.println(deleteResponse.getResult());
     }
 }
