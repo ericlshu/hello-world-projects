@@ -7,6 +7,8 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.support.replication.ReplicationResponse;
+import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.Strings;
@@ -194,5 +196,35 @@ public class DocumentTest
         // {
         //     throw new RuntimeException(e);
         // }
+    }
+
+    @Test
+    public void testUpdate() throws IOException
+    {
+        UpdateRequest updateRequest = new UpdateRequest("test_posts", "3");
+
+        Map<String, Object> jsonMap = new HashMap<>();
+        jsonMap.put("user", "Tomas JJ");
+        updateRequest.doc(jsonMap);
+
+        // 设置超时时间
+        updateRequest.timeout("1s");
+        // 设置重试次数
+        updateRequest.retryOnConflict(3);
+
+        // 设置在继续更新之前，必须激活的分片数
+        // updateRequest.waitForActiveShards(2);
+        // 所有分片都是active状态，才更新
+        // updateRequest.waitForActiveShards(ActiveShardCount.ALL);
+
+        UpdateResponse updateResponse = client.update(updateRequest, RequestOptions.DEFAULT);
+        System.out.println(updateResponse.getVersion());
+        System.out.println(updateResponse.getIndex());
+        System.out.println(updateResponse.getResult());
+
+        if (updateResponse.getResult() == DocWriteResponse.Result.NOOP)
+        {
+            System.out.println("数据未发生变更！");
+        }
     }
 }
