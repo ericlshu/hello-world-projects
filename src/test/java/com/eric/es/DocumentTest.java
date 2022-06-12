@@ -2,6 +2,9 @@ package com.eric.es;
 
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteResponse;
+import org.elasticsearch.action.bulk.BulkItemResponse;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
@@ -15,6 +18,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -243,5 +247,44 @@ public class DocumentTest
         System.out.println(deleteResponse.getId());
         System.out.println(deleteResponse.getIndex());
         System.out.println(deleteResponse.getResult());
+    }
+
+    @Test
+    public void testBulk() throws IOException
+    {
+        // 1.构建请求
+        BulkRequest request = new BulkRequest();
+        // request.add(new IndexRequest("post").id("1").source(XContentType.JSON, "field", "1"));
+        // request.add(new IndexRequest("post").id("2").source(XContentType.JSON, "field", "2"));
+
+        request.add(new UpdateRequest("post", "2").doc(XContentType.JSON, "field", "3"));
+        request.add(new DeleteRequest("post").id("1"));
+
+        // 2.执行操作
+        BulkResponse bulkResponse = client.bulk(request, RequestOptions.DEFAULT);
+
+        // 3.获取结果
+        for (BulkItemResponse itemResponse : bulkResponse)
+        {
+            DocWriteResponse itemResponseResponse = itemResponse.getResponse();
+            System.out.println(itemResponseResponse.getResult());
+            /*switch (itemResponse.getOpType())
+            {
+                case INDEX:
+                    break;
+                case CREATE:
+                    IndexResponse indexResponse = (IndexResponse) itemResponseResponse;
+                    System.out.println(indexResponse.getResult());
+                    break;
+                case UPDATE:
+                    UpdateResponse updateResponse = (UpdateResponse) itemResponseResponse;
+                    System.out.println(updateResponse.getResult());
+                    break;
+                case DELETE:
+                    DeleteResponse deleteResponse = (DeleteResponse) itemResponseResponse;
+                    System.out.println(deleteResponse.getResult());
+                    break;
+            }*/
+        }
     }
 }
