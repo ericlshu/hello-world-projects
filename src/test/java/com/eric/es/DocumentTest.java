@@ -1,17 +1,23 @@
 package com.eric.es;
 
 import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.support.replication.ReplicationResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.Strings;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -89,5 +95,104 @@ public class DocumentTest
         {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    public void testAdd() throws IOException
+    {
+        IndexRequest indexRequest = new IndexRequest("test_posts");
+        indexRequest.id("1");
+
+        // 构建方法1:Json字符串
+        // String jsonString = "{\n" +
+        //         "  \"user\":\"tomas J\",\n" +
+        //         "  \"postDate\":\"2019-07-18\",\n" +
+        //         "  \"message\":\"trying out es3\"\n" +
+        //         "}";
+        // indexRequest.source(jsonString, XContentType.JSON);
+
+        // 构建方法2:Map对象
+        Map<String, Object> jsonMap = new HashMap<>();
+        jsonMap.put("user", "eric");
+        jsonMap.put("postDate", "2022-06-12");
+        jsonMap.put("message", "test index add");
+        indexRequest.source(jsonMap);
+
+        // 构建方法3:XContentBuilder
+        // XContentBuilder builder = XContentFactory.jsonBuilder();
+        // builder.startObject();
+        // {
+        //     builder.field("user", "tomas");
+        //     builder.timeField("postDate", new Date());
+        //     builder.field("message", "trying out es2");
+        // }
+        // builder.endObject();
+        // indexRequest.source(builder);
+
+        // 构建方法4:key-value
+        // indexRequest.source("user", "tomas",
+        //                     "postDate", new Date(),
+        //                     "message", "trying out es2");
+
+        // 设置超时时间
+        indexRequest.timeout(TimeValue.timeValueSeconds(1));
+
+        // 自己维护版本号
+        // indexRequest.version(2);
+        // indexRequest.versionType(VersionType.EXTERNAL);
+
+        // 同步执行操作
+        IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
+        String index = indexResponse.getIndex();
+        String id = indexResponse.getId();
+        DocWriteResponse.Result result = indexResponse.getResult();
+        System.out.println("id = " + id);
+        System.out.println("index = " + index);
+        System.out.println("result = " + result);
+
+        if (DocWriteResponse.Result.CREATED.equals(result))
+        {
+            System.out.println("新增成功！");
+        }
+
+        ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
+        if (shardInfo.getTotal() != shardInfo.getSuccessful())
+        {
+            System.out.println("处理成功的分片数少于总分片！");
+        }
+        if (shardInfo.getFailed() > 0)
+        {
+            for (ReplicationResponse.ShardInfo.Failure failure : shardInfo.getFailures())
+            {
+                System.out.println(failure.reason());
+            }
+        }
+
+        // 异步执行操作
+        // ActionListener<IndexResponse> listener = new ActionListener<IndexResponse>()
+        // {
+        //     @Override
+        //     public void onResponse(IndexResponse indexResponse)
+        //     {
+        //         System.out.println(indexResponse.getId());
+        //         System.out.println(indexResponse.getResult());
+        //     }
+        //
+        //     @Override
+        //     public void onFailure(Exception e)
+        //     {
+        //         e.printStackTrace();
+        //         throw new RuntimeException(e);
+        //     }
+        // };
+        // client.indexAsync(indexRequest, RequestOptions.DEFAULT, listener);
+        // try
+        // {
+        //     Thread.sleep(1000);
+        // }
+        // catch (InterruptedException e)
+        // {
+        //     throw new RuntimeException(e);
+        // }
     }
 }
