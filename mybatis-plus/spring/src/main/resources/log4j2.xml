@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="warn" monitorInterval="30">
+
+    <properties>
+        <property name="logFilePath">${sys:user.home}/logs</property>
+    </properties>
+
+    <appenders>
+        <console name="console" target="SYSTEM_OUT">
+            <PatternLayout charset="UTF-8" pattern="[%date{DEFAULT}] [%-5level] - %logger{1.}.%method(%line) -->> %msg%n"/>
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+        </console>
+        <File name="dailyLogFile" fileName="${logFilePath}/${date:yyyy-MM-dd}.log" append="true">
+            <PatternLayout pattern="[%d{HH:mm:ss.SSS}] [%-5p] [%t:%T]- %C.%M(%L) - %msg%xEx%n"/>
+        </File>
+    </appenders>
+
+    <loggers>
+        <root level="debug">
+            <appender-ref ref="console"/>
+            <appender-ref ref="dailyLogFile"/>
+        </root>
+    </loggers>
+
+</configuration>
