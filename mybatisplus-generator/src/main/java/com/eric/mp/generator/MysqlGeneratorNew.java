@@ -1,0 +1,294 @@
+package com.eric.mp.generator;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.generator.AutoGenerator;
+import com.baomidou.mybatisplus.generator.config.*;
+import com.baomidou.mybatisplus.generator.config.converts.MySqlTypeConvert;
+import com.baomidou.mybatisplus.generator.config.po.LikeTable;
+import com.baomidou.mybatisplus.generator.config.querys.MySqlQuery;
+import com.baomidou.mybatisplus.generator.config.rules.DateType;
+import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+import com.baomidou.mybatisplus.generator.fill.Column;
+import com.baomidou.mybatisplus.generator.fill.Property;
+import com.baomidou.mybatisplus.generator.keywords.MySqlKeyWordsHandler;
+
+import java.util.Collections;
+
+/**
+ * Description :
+ *
+ * @author Eric L SHU
+ * @date 2022-03-17 18:22
+ */
+public class MysqlGeneratorNew {
+
+    public static void main(String[] args)
+    {
+        AutoGenerator generator = new AutoGenerator(getDataSourceConfig());
+
+        generator.global(getGlobalConfig());
+        generator.packageInfo(getPackageConfig());
+        generator.injection(getInjectionConfig());
+        generator.strategy(getStrategyConfig());
+
+        generator.execute();
+    }
+
+    /**
+     * 方法	                                说明	                        示例
+     * dbQuery(IDbQuery)	                数据库查询	                new MySqlQuery()
+     * schema(String)	                    数据库 schema(部分数据库适用)	mybatis-plus
+     * typeConvert(ITypeConvert)	        数据库类型转换器	            new MySqlTypeConvert()
+     * keyWordsHandler(IKeyWordsHandler)	数据库关键字处理器	            new MySqlKeyWordsHandler()
+     */
+    private static DataSourceConfig getDataSourceConfig()
+    {
+        return new DataSourceConfig
+                .Builder("jdbc:mysql://127.0.0.1:3306/ruoyi", "eric", "1234")
+                .dbQuery(new MySqlQuery())
+                // .schema("mybatis-plus")
+                .typeConvert(new MySqlTypeConvert())
+                .keyWordsHandler(new MySqlKeyWordsHandler())
+                .build();
+    }
+
+    /**
+     * 方法	                说明	                示例
+     * fileOverride	        覆盖已生成文件	        默认值:false
+     * disableOpenDir	    禁止打开输出目录	    默认值:true
+     * outputDir(String)	指定输出目录	        /opt/eric/ 默认值: windows:D:// linux or mac : /tmp
+     * author(String)	    作者名	            eric 默认值:作者
+     * enableKotlin	        开启 kotlin 模式	    默认值:false
+     * enableSwagger	    开启 swagger 模式	    默认值:false
+     * dateType(DateType)	时间策略	            DateType.ONLY_DATE 默认值: DateType.TIME_PACK
+     * commentDate(String)	注释日期	            默认值: yyyy-MM-dd
+     */
+    private static GlobalConfig getGlobalConfig()
+    {
+        return new GlobalConfig.Builder()
+                // .fileOverride()
+                .outputDir(System.getProperty("user.dir") + "/src/main/java/")
+                .author("Eric SHU")
+                // .enableKotlin()
+                // .enableSwagger()
+                .dateType(DateType.TIME_PACK)
+                .commentDate("yyyy-MM-dd")
+                .disableOpenDir()
+                .build();
+    }
+
+    /**
+     * 方法	                                说明	                示例
+     * parent(String)	                    父包名	            默认值:com.eric
+     * moduleName(String)	                父包模块名	        默认值:无
+     * entity(String)	                    Entity 包名	        默认值:entity
+     * service(String)	                    Service 包名	        默认值:service
+     * serviceImpl(String)	                Service Impl 包名	默认值:service.impl
+     * mapper(String)	                    Mapper 包名	        默认值:mapper
+     * xml(String)	                        Mapper XML 包名	    默认值:mapper.xml
+     * controller(String)	                Controller 包名	    默认值:controller
+     * other(String)	                    自定义文件包名	        输出自定义文件时所用到的包名
+     * pathInfo(Map<OutputFile, String>)	路径配置信息	        Collections.singletonMap(OutputFile.mapperXml, "D://")
+     */
+    private static PackageConfig getPackageConfig()
+    {
+        return new PackageConfig.Builder()
+                .parent("com.eric.mp")
+                // .moduleName("sys")
+                .entity("pojo")
+                .service("service")
+                .serviceImpl("service.impl")
+                .mapper("mapper")
+                .xml("mapper/xml")
+                .controller("controller")
+                .other("other")
+                .pathInfo(Collections.singletonMap(OutputFile.mapper, System.getProperty("user.dir") + "/src/main/java/com/eric/mp/mapper"))
+                .build();
+    }
+
+    /**
+     * 方法	                                                        说明	                示例
+     * beforeOutputFile(BiConsumer<TableInfo, Map<String, Object>>)	输出文件之前消费者
+     * customMap(Map<String, Object>)	                            自定义配置 Map 对象	Collections.singletonMap("test", "eric")
+     * customFile(Map<String, String>)	                            自定义配置模板文件	    Collections.singletonMap("test.txt", "/templates/test.vm")
+     */
+    private static InjectionConfig getInjectionConfig()
+    {
+        return new InjectionConfig.Builder()
+                .beforeOutputFile((tableInfo, objectMap) -> System.out.println("tableInfo: " + tableInfo.getEntityName() + " objectMap: " + objectMap.size()))
+                // .customMap(Collections.singletonMap("test", "eric"))
+                // .customFile(Collections.singletonMap("test.txt", "/templates/test.vm"))
+                .build();
+    }
+
+    private static StrategyConfig getStrategyConfig()
+    {
+        StrategyConfig.Builder builder = new StrategyConfig.Builder();
+
+        /*
+         * 方法	                        说明	                示例
+         * enableCapitalMode	        开启大写命名	        默认值:false
+         * enableSkipView	            开启跳过视图	        默认值:false
+         * disableSqlFilter	            禁用 sql 过滤	        默认值:true，语法不能支持使用 sql 过滤表的话，可以考虑关闭此开关
+         * enableSchema	                启用 schema	        默认值:false，多 schema 场景的时候打开
+         * likeTable(LikeTable)	        模糊表匹配(sql 过滤)	likeTable 与 notLikeTable 只能配置一项
+         * notLikeTable(LikeTable)	    模糊表排除(sql 过滤)	likeTable 与 notLikeTable 只能配置一项
+         * addInclude(String...)	    增加表匹配(内存过滤)	include 与 exclude 只能配置一项
+         * addExclude(String...)	    增加表排除匹配(内存过滤)	include 与 exclude 只能配置一项
+         * addTablePrefix(String...)	增加过滤表前缀
+         * addTableSuffix(String...)	增加过滤表后缀
+         * addFieldPrefix(String...)	增加过滤字段前缀
+         * addFieldSuffix(String...)	增加过滤字段后缀
+         * entityBuilder	            实体策略配置
+         * controllerBuilder	        controller 策略配置
+         * mapperBuilder	            mapper 策略配置
+         * serviceBuilder	            service 策略配置
+         */
+        builder
+                .enableCapitalMode()
+                .enableSkipView()
+                .disableSqlFilter()
+                .likeTable(new LikeTable("USER"))
+                // .addInclude("sys_user")
+                .addTablePrefix("sys_", "tb_")
+                .addFieldSuffix("_flag");
+        /*
+         * 方法	                                说明	示例
+         * nameConvert(INameConvert)	        名称转换实现
+         * superClass(Class<?>)	                设置父类	BaseEntity.class
+         * superClass(String)	                设置父类	com.eric.global.BaseEntity
+         * disableSerialVersionUID	            禁用生成 serialVersionUID	默认值:true
+         * enableColumnConstant	                开启生成字段常量	默认值:false
+         * enableChainModel	                    开启链式模型	默认值:false
+         * enableLombok	                        开启 lombok 模型	默认值:false
+         * enableRemoveIsPrefix	                开启 Boolean 类型字段移除 is 前缀	默认值:false
+         * enableTableFieldAnnotation	        开启生成实体时生成字段注解	默认值:false
+         * enableActiveRecord	                开启 ActiveRecord 模型	默认值:false
+         * versionColumnName(String)	        乐观锁字段名(数据库)
+         * versionPropertyName(String)	        乐观锁属性名(实体)
+         * logicDeleteColumnName(String)	    逻辑删除字段名(数据库)
+         * logicDeletePropertyName(String)	    逻辑删除属性名(实体)
+         * naming	                            数据库表映射到实体的命名策略	默认下划线转驼峰命名:NamingStrategy.underline_to_camel
+         * columnNaming	                        数据库表字段映射到实体的命名策略	默认为 null，未指定按照 naming 执行
+         * addSuperEntityColumns(String...)	    添加父类公共字段
+         * addIgnoreColumns(String...)	        添加忽略字段
+         * addTableFills(IFill...)	            添加表字段填充
+         * addTableFills(List<IFill>)	        添加表字段填充
+         * idType(IdType)	                    全局主键类型
+         * convertFileName(ConverterFileName)	转换文件名称
+         * formatFileName(String)	            格式化文件名称
+         */
+
+        builder.entityBuilder()
+                // .superClass(BaseEntity.class)
+                .disableSerialVersionUID()
+                .enableChainModel()
+                .enableLombok()
+                .enableRemoveIsPrefix()
+                .enableTableFieldAnnotation()
+                .enableActiveRecord()
+                .versionColumnName("version")
+                .versionPropertyName("version")
+                .logicDeleteColumnName("deleted")
+                .logicDeletePropertyName("deleteFlag")
+                .naming(NamingStrategy.underline_to_camel)
+                .columnNaming(NamingStrategy.underline_to_camel)
+                .addSuperEntityColumns("id", "created_by", "created_time", "updated_by", "updated_time")
+                .addIgnoreColumns("age")
+                .addTableFills(new Column("create_time", FieldFill.INSERT))
+                .addTableFills(new Property("updateTime", FieldFill.INSERT_UPDATE))
+                .idType(IdType.AUTO)
+                .formatFileName("%sEntity");
+
+        /*
+         * Controller 策略配置
+         *
+         * 方法	                                说明	                        示例
+         * superClass(Class<?>)	                设置父类	                    BaseController.class
+         * superClass(String)	                设置父类	                    com.eric.global.BaseController
+         * enableHyphenStyle	                开启驼峰转连字符	            默认值:false
+         * enableRestStyle	                    开启生成@RestController 控制器	默认值:false
+         * convertFileName(ConverterFileName)	转换文件名称
+         * formatFileName(String)	            格式化文件名称
+         */
+        builder.controllerBuilder()
+                // .superClass(BaseController.class)
+                .enableHyphenStyle()
+                .enableRestStyle()
+                .formatFileName("%sAction");
+
+        /*
+         * Service 策略配置
+         *
+         * 方法	                                            说明	                    示例
+         * superServiceClass(Class<?>)	                    设置 service 接口父类	    BaseService.class
+         * superServiceClass(String)	                    设置 service 接口父类	    com.eric.global.BaseService
+         * superServiceImplClass(Class<?>)	                设置 service 实现类父类	BaseServiceImpl.class
+         * superServiceImplClass(String)	                设置 service 实现类父类	com.eric.global.BaseServiceImpl
+         * convertServiceFileName(ConverterFileName)	    转换 service 接口文件名称
+         * convertServiceImplFileName(ConverterFileName)	转换 service 实现类文件名称
+         * formatServiceFileName(String)	                格式化 service 接口文件名称
+         * formatServiceImplFileName(String)	            格式化 service 实现类文件名称
+         */
+        builder.serviceBuilder()
+                // .superServiceClass(BaseService.class)
+                // .superServiceImplClass(BaseServiceImpl.class)
+                .formatServiceFileName("%sService")
+                .formatServiceImplFileName("%sServiceImp");
+
+        /*
+         * Mapper 策略配置
+         *
+         * 方法	                                    说明	                    示例
+         * superClass(Class<?>)	                    设置父类	                BaseMapper.class
+         * superClass(String)	                    设置父类	                com.eric.global.BaseMapper
+         * enableMapperAnnotation	                开启 @Mapper 注解	        默认值:false
+         * enableBaseResultMap	                    启用 BaseResultMap 生成	默认值:false
+         * enableBaseColumnList	                    启用 BaseColumnList	    默认值:false
+         * cache(Class<? extends Cache>)	        设置缓存实现类	            MyMapperCache.class
+         * convertMapperFileName(ConverterFileName)	转换 mapper 类文件名称
+         * convertXmlFileName(ConverterFileName)	转换 xml 文件名称
+         * formatMapperFileName(String)	            格式化 mapper 文件名称
+         * formatXmlFileName(String)	            格式化 xml 实现类文件名称
+         */
+
+        builder.mapperBuilder()
+                .superClass(BaseMapper.class)
+                .enableMapperAnnotation()
+                .enableBaseResultMap()
+                .enableBaseColumnList()
+                // .cache(MyMapperCache.class)
+                .formatMapperFileName("%sDao")
+                .formatXmlFileName("%sXml")
+                .build();
+
+        return builder.build();
+    }
+
+    /**
+     * 方法	                    说明	                    示例
+     * disable	                禁用所有模板
+     * disable(TemplateType...)	禁用模板	                TemplateType.ENTITY
+     * entity(String)	        设置实体模板路径(JAVA)	    /templates/entity.java
+     * entityKt(String)	        设置实体模板路径(kotlin)	/templates/entity.java
+     * service(String)	        设置 service 模板路径	    /templates/service.java
+     * serviceImpl(String)	    设置 serviceImpl 模板路径	/templates/serviceImpl.java
+     * mapper(String)	        设置 mapper 模板路径	    /templates/mapper.java
+     * mapperXml(String)	    设置 mapperXml 模板路径	/templates/mapper.xml
+     * controller(String)	    设置 controller 模板路径	/templates/controller.java
+     */
+    private static TemplateConfig getTemplateConfig()
+    {
+        return new TemplateConfig.Builder()
+                .disable(TemplateType.ENTITY)
+                .entity("/templates/entity.java")
+                .service("/templates/service.java")
+                .serviceImpl("/templates/serviceImpl.java")
+                .mapper("/templates/mapper.java")
+                .xml("/templates/mapper.xml")
+                .controller("/templates/controller.java")
+                .build();
+    }
+}
